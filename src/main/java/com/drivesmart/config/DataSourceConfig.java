@@ -1,13 +1,15 @@
 package com.drivesmart.config;
 
-import com.zaxxer.hikari.HikariDataSource;
+import java.net.URI;
+
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 
-import javax.sql.DataSource;
-import java.net.URI;
+import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 public class DataSourceConfig {
@@ -16,52 +18,82 @@ public class DataSourceConfig {
     public DataSource dataSource(Environment env) {
         String databaseUrl = env.getProperty("DATABASE_URL");
         String springUrl = env.getProperty("SPRING_DATASOURCE_URL");
+        
+        // Try SPRING_DATASOURCE_URL first
         if (springUrl != null && !springUrl.isBlank()) {
-            if (springUrl.startsWith("postgres://")) {
-                databaseUrl = springUrl;
+            return createDataSourceFromUrl(springUrl, env);
+        }
+        
+        // Try DATABASE_URL second
+        if (databaseUrl != null && !databaseUrl.isBlank()) {
+            return createDataSourceFromUrl(databaseUrl, env);
+        }
+        
+        // Try PG* variables
+        return createDataSourceFromPGVariables(env);
+    }
+    
+    private DataSource createDataSourceFromUrl(String url, Environment env) {
+        HikariDataSource ds = new HikariDataSource();
+        
+        // Remove "postgres://" prefix if present
+        String normalized = url.replace("postgres://", "postgresql://");
+        
+        // Add "jdbc:" prefix if missing
+        if (!normalized.startsWith("jdbc:")) {
+            normalized = "jdbc:" + normalized;
+        }
+        
+        // Parse credentials from URL if they exist
+        try {
+            // Extract the part after jdbc:
+            String urlWithoutJdbc = normalized.substring(5); // Remove "jdbc:"
+            URI uri = URI.create(urlWithoutJdbc);
+            
+            String userInfo = uri.getUserInfo();
+            if (userInfo != null) {
+                // URL has credentials embedded (user:pass@host)
+                String[] parts = userInfo.split(":", 2);
+                String username = parts.length > 0 ? parts[0] : null;
+                String password = parts.length > 1 ? parts[1] : null;
+                
+                ds.setJdbcUrl(normalized);
+                ds.setUsername(username);
+                ds.setPassword(password);
+                return ds;
             } else {
-                HikariDataSource ds = new HikariDataSource();
-                ds.setJdbcUrl(springUrl);
-                ds.setUsername(env.getProperty("SPRING_DATASOURCE_USERNAME"));
-                ds.setPassword(env.getProperty("SPRING_DATASOURCE_PASSWORD"));
+                // URL doesn't have credentials, use separate variables
+                ds.setJdbcUrl(normalized);
+                ds.setUsername(env.getProperty("SPRING_DATASOURCE_USERNAME", 
+                             env.getProperty("PGUSER", "postgres")));
+                ds.setPassword(env.getProperty("SPRING_DATASOURCE_PASSWORD", 
+                             env.getProperty("PGPASSWORD", "")));
                 return ds;
             }
-        }
-        if (databaseUrl != null && !databaseUrl.isBlank()) {
-            String normalized = databaseUrl.replace("postgres://", "postgresql://");
-            URI uri = URI.create(normalized);
-            String userInfo = uri.getUserInfo();
-            String username = null;
-            String password = null;
-            if (userInfo != null) {
-                String[] parts = userInfo.split(":", 2);
-                username = parts.length > 0 ? parts[0] : null;
-                password = parts.length > 1 ? parts[1] : null;
-            }
-            String host = uri.getHost();
-            int port = uri.getPort() > 0 ? uri.getPort() : 5432;
-            String path = uri.getPath();
-            String db = path != null && path.startsWith("/") ? path.substring(1) : path;
-            String jdbc = "jdbc:postgresql://" + host + ":" + port + "/" + db;
-            HikariDataSource ds = new HikariDataSource();
-            ds.setJdbcUrl(jdbc);
-            ds.setUsername(username);
-            ds.setPassword(password);
+        } catch (Exception e) {
+            // Fallback: use URL as-is
+            ds.setJdbcUrl(normalized);
             return ds;
         }
+    }
+    
+    private DataSource createDataSourceFromPGVariables(Environment env) {
         String host = env.getProperty("PGHOST");
         String port = env.getProperty("PGPORT", "5432");
         String db = env.getProperty("PGDATABASE");
-        String username = env.getProperty("PGUSER");
-        String password = env.getProperty("PGPASSWORD");
-        if (host != null && db != null && username != null) {
-            String jdbc = "jdbc:postgresql://" + host + ":" + port + "/" + db;
+        String username = env.getProperty("PGUSER", "postgres");
+        String password = env.getProperty("PGPASSWORD", "");
+        
+        if (host != null && db != null) {
+            String jdbcUrl = "jdbc:postgresql://" + host + ":" + port + "/" + db;
             HikariDataSource ds = new HikariDataSource();
-            ds.setJdbcUrl(jdbc);
+            ds.setJdbcUrl(jdbcUrl);
             ds.setUsername(username);
             ds.setPassword(password);
             return ds;
         }
+        
+        // Final fallback to application.properties
         String fallbackUrl = env.getProperty("spring.datasource.url");
         HikariDataSource ds = new HikariDataSource();
         ds.setJdbcUrl(fallbackUrl);
@@ -70,4 +102,3 @@ public class DataSourceConfig {
         return ds;
     }
 }
-
