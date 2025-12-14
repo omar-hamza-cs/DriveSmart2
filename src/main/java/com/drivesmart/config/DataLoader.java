@@ -3,6 +3,7 @@ package com.drivesmart.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.drivesmart.entity.User;
@@ -10,6 +11,7 @@ import com.drivesmart.entity.UserRole;
 import com.drivesmart.service.UserService;
 
 @Component
+@Profile("dev")
 public class DataLoader implements CommandLineRunner {
 
     @Autowired
@@ -36,7 +38,6 @@ public class DataLoader implements CommandLineRunner {
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setIsActive(true);
             userService.saveUser(admin);
-            System.out.println("Demo admin user created: admin@drivesmart.com / admin123");
         }
 
         if (!userService.existsByEmail("worker@drivesmart.com")) {
@@ -48,7 +49,6 @@ public class DataLoader implements CommandLineRunner {
             worker.setPassword(passwordEncoder.encode("worker123"));
             worker.setIsActive(true);
             userService.saveUser(worker);
-            System.out.println("Demo worker user created: worker@drivesmart.com / worker123");
         }
 
         if (!userService.existsByEmail("user@drivesmart.com")) {
@@ -60,7 +60,6 @@ public class DataLoader implements CommandLineRunner {
             customer.setPassword(passwordEncoder.encode("user123"));
             customer.setIsActive(true);
             userService.saveUser(customer);
-            System.out.println("Demo customer user created: user@drivesmart.com / user123");
         }
     }
 

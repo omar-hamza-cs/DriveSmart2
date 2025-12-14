@@ -2,11 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en" th:fragment="layout(title, mainContent, scripts, pageClass)">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/css/main.css" as="style">
+    <link rel="preload" href="/js/app.js" as="script">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#3b82f6">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/images/logov1-removebg-preview.png">
+    <link rel="apple-touch-icon" href="/images/app-icon.png">
+    <meta name="apple-mobile-web-app-title" content="DriveSmart">
     <title th:replace="${title}">DriveSmart</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="icon" th:href="@{/images/logov1-removebg-preview.png}" type="image/png">
