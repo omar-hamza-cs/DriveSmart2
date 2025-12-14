@@ -12,5 +12,5 @@ import com.drivesmart.entity.AuditLog;
 public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
     List<AuditLog> findAllByOrderByTimestampDesc();
     List<AuditLog> findByLevelOrderByTimestampDesc(AuditLevel level);
-    List<AuditLog> findByUserContainingIgnoreCaseOrderByTimestampDesc(String user);
+    List<AuditLog> findByUsernameContainingIgnoreCaseOrderByTimestampDesc(String username);
 }
