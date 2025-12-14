@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::scripts}, 'cars')}">
+<head>
+    <title th:text="${car?.brand + ' ' + car?.model}">Car Details - DriveSmart</title>
+</head>
+<body>
+    <main>
+        <div class="container" style="padding: 1rem;">
+            
+            <!-- Back Button -->
+            <div class="mb-4">
+                <a th:href="@{/cars}" class="btn btn-outline" style="text-decoration: none;">← Back to Cars</a>
+            </div>
+
+            <!-- Car Hero Image -->
+            <div class="card mb-4" style="position: relative; overflow: hidden; border-radius: 1rem;">
+                <div th:if="${car?.imageUrl}" style="height: 250px; overflow: hidden;">
+                    <img th:src="${car.imageUrl}" th:alt="${car.brand + ' ' + car.model}" 
+                         style="width: 100%; height: 100%; object-fit: cover;"
+                         onerror="this.onerror=null; this.src='/images/logov1-removebg-preview.png'">
+                </div>
+                <div th:unless="${car?.imageUrl}" 
+                     style="height: 250px; background: #F8F9FA; display: flex; align-items: center; justify-content: center;">
+                    <img src="/images/logov1-removebg-preview.png" alt="DriveSmart" style="height:64px">
+                </div>
+                
+                <!-- Price Badge -->
+                <div style="position: absolute; top: 1rem; right: 1rem; background: white; padding: 0.5rem 1rem; border-radius: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    <div style="font-weight: 700; color: var(--cta); font-size: 1.25rem;" 
+                         th:text="${car?.pricePerDay ? '$' + car.pricePerDay + '/day' : '$-/day'}">
+                        $89/day
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car Title and Status -->
+            <div class="card mb-4">
+                <div style="margin-bottom: 1rem;">
+                    <h1 style="font-size: 1.75rem; color: var(--dark); margin-bottom: 0.25rem;" 
+                        th:text="${car?.brand + ' ' + car?.model + ' ' + car?.year}">
+                        Audi A3 2023
+                    </h1>
+                    <div class="text-secondary" 
+                         th:text="${car?.color ?: 'White'} + ' • ' + ${car?.licensePlate ?: 'ABC-123'}">
+                        White • ABC-123
+                    </div>
+                </div>
+                
+                <!-- Availability Badge -->
+                <div th:if="${car?.inMaintenance}" 
+                     style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(255, 149, 0, 0.12); color: #FF9500; border-radius: 2rem; font-weight: 600;">
+                    <span>🛠️</span> In Maintenance
+                </div>
+                <div th:if="${!car?.inMaintenance} and ${car?.isAvailable}" 
+                     style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(25, 135, 84, 0.1); color: #198754; border-radius: 2rem; font-weight: 600;">
+                    <span>✅</span> Available Now
+                </div>
+                <div th:if="${!car?.inMaintenance} and ${!car?.isAvailable}" 
+                     style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(220, 53, 69, 0.1); color: #dc3545; border-radius: 2rem; font-weight: 600;">
+                    <span>⏳</span> Currently Unavailable
+                </div>
+            </div>
+
+            <!-- Quick Stats (existing fields only) -->
+            <div class="grid-4 mb-4" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                <div class="card text-center" style="border: 1px solid var(--border);">
+                    <div style="font-size: 1.5rem; color: var(--primary); margin-bottom: 0.5rem;">🎨</div>
+                    <div style="font-weight: 600; color: var(--dark);" th:text="${car?.color}">Color</div>
+                    <div class="text-secondary" style="font-size: 0.875rem;">Color</div>
+                </div>
+                <div class="card text-center" style="border: 1px solid var(--border);">
+                    <div style="font-size: 1.5rem; color: var(--secondary); margin-bottom: 0.5rem;">🔖</div>
+                    <div style="font-weight: 600; color: var(--dark);" th:text="${car?.licensePlate}">ABC-123</div>
+                    <div class="text-secondary" style="font-size: 0.875rem;">License Plate</div>
+                </div>
+                <div class="card text-center" style="border: 1px solid var(--border);">
+                    <div style="font-size: 1.5rem; color: var(--cta); margin-bottom: 0.5rem;">💵</div>
+                    <div style="font-weight: 600; color: var(--dark);" th:text="${car?.pricePerDay} + ' / day'">$0 / day</div>
+                    <div class="text-secondary" style="font-size: 0.875rem;">Daily Rate</div>
+                </div>
+                <div class="card text-center" style="border: 1px solid var(--border);">
+                    <div style="font-size: 1.5rem; color: var(--accent); margin-bottom: 0.5rem;">⚙️</div>
+                    <div style="font-weight: 600; color: var(--dark);" th:text="${car?.inMaintenance} ? 'Maintenance' : (${car?.isAvailable} ? 'Available' : 'Unavailable')">Status</div>
+                    <div class="text-secondary" style="font-size: 0.875rem;">Status</div>
+                </div>
+            </div>
+
+            
+
+            
+
+            <!-- Action Buttons -->
+            <div class="grid-4 mb-4" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                <a th:if="${car?.isAvailable} and ${!car?.inMaintenance}" th:href="@{/bookings/new(carId=${car?.id})}" 
+                   class="btn btn-primary" style="width: 100%; text-decoration: none;">
+                    <span style="margin-right: 0.5rem;">📅</span> Book This Car
+                </a>
+                <button th:if="${!car?.isAvailable} or ${car?.inMaintenance}" class="btn btn-secondary" style="width: 100%;" disabled>
+                    Unavailable
+                </button>
+            </div>
+
+            <!-- Earnings Summary -->
+            <div class="card mb-4">
+                <h2 style="color: var(--dark); margin-bottom: 1rem; font-size: 1.25rem;">Earnings Summary</h2>
+                
+                <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-bottom: 1rem;">
+                    <div class="card text-center" style="border: 1px solid var(--border);">
+                        <div style="font-size: 1.25rem; color: var(--cta); margin-bottom: 0.5rem;">💰</div>
+                        <div style="font-weight: 600; color: var(--dark);">$1,250</div>
+                        <div class="text-secondary" style="font-size: 0.875rem;">Total Earned</div>
+                    </div>
+                    
+                    <div class="card text-center" style="border: 1px solid var(--border);">
+                        <div style="font-size: 1.25rem; color: var(--primary); margin-bottom: 0.5rem;">📅</div>
+                        <div style="font-weight: 600; color: var(--dark);">15</div>
+                        <div class="text-secondary" style="font-size: 0.875rem;">Days Rented</div>
+                    </div>
+                    
+                    <div class="card text-center" style="border: 1px solid var(--border);">
+                        <div style="font-size: 1.25rem; color: var(--secondary); margin-bottom: 0.5rem;">⭐</div>
+                        <div style="font-weight: 600; color: var(--dark);">4.8</div>
+                        <div class="text-secondary" style="font-size: 0.875rem;">Avg. Rating</div>
+                    </div>
+                    
+                    <div class="card text-center" style="border: 1px solid var(--border);">
+                        <div style="font-size: 1.25rem; color: var(--accent); margin-bottom: 0.5rem;">🔄</div>
+                        <div style="font-weight: 600; color: var(--dark);">75%</div>
+                        <div class="text-secondary" style="font-size: 0.875rem;">Utilization</div>
+                    </div>
+                </div>
+                
+                <div class="text-secondary" style="font-size: 0.875rem;">
+                    Based on last 30 days of rental activity
+                </div>
+            </div>
+
+            <!-- Recent Bookings -->
+            <div class="card mb-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 style="color: var(--dark); font-size: 1.25rem;">Recent Bookings</h2>
+                    <a th:href="@{/bookings}" class="btn btn-outline" style="text-decoration: none; font-size: 0.875rem;">View All</a>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div class="card" style="border: 1px solid var(--border); padding: 1rem;">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div style="font-weight: 600; color: var(--dark);">John Doe</div>
+                                <div class="text-secondary" style="font-size: 0.875rem;">Nov 15-18 • 3 days</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600; color: var(--dark);">$267</div>
+                                <div style="padding: 0.25rem 0.75rem; background: rgba(25, 135, 84, 0.1); color: #198754; border-radius: 1rem; font-size: 0.75rem; margin-top: 0.25rem;">
+                                    Completed
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="border: 1px solid var(--border); padding: 1rem;">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div style="font-weight: 600; color: var(--dark);">Alice Smith</div>
+                                <div class="text-secondary" style="font-size: 0.875rem;">Nov 10-12 • 2 days</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600; color: var(--dark);">$178</div>
+                                <div style="padding: 0.25rem 0.75rem; background: rgba(25, 135, 84, 0.1); color: #198754; border-radius: 1rem; font-size: 0.75rem; margin-top: 0.25rem;">
+                                    Completed
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="border: 1px solid var(--border); padding: 1rem;">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div style="font-weight: 600; color: var(--dark);">Bob Johnson</div>
+                                <div class="text-secondary" style="font-size: 0.875rem;">Current • 5 days</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600; color: var(--dark);">$445</div>
+                                <div style="padding: 0.25rem 0.75rem; background: rgba(13, 110, 253, 0.1); color: #0d6efd; border-radius: 1rem; font-size: 0.75rem; margin-top: 0.25rem;">
+                                    In Progress
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <h2 style="color: var(--dark); margin-bottom: 1rem; font-size: 1.25rem;">Quick Actions</h2>
+                
+                <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                    <button class="btn btn-outline" style="width: 100%;" onclick="updateAvailability()">
+                        <span style="margin-right: 0.5rem;">🔄</span> Toggle Availability
+                    </button>
+                    
+                    <button class="btn btn-outline" style="width: 100%;" onclick="shareCar()">
+                        <span style="margin-right: 0.5rem;">📤</span> Share Listing
+                    </button>
+                    
+                    <button class="btn btn-outline" style="width: 100%;" onclick="showCalendar()">
+                        <span style="margin-right: 0.5rem;">📅</span> View Calendar
+                    </button>
+                    
+                    <button class="btn btn-outline" style="width: 100%; color: #dc3545; border-color: #dc3545;" 
+                            onclick="confirmRemoveCar()">
+                        <span style="margin-right: 0.5rem;">🗑️</span> Remove Car
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Share car functionality
+            window.shareCar = function() {
+                const carName = document.querySelector('h1').textContent;
+                const carPrice = document.querySelector('[style*="font-weight: 700; color: var(--cta)"]').textContent;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: `Check out ${carName} on DriveSmart`,
+                        text: `${carName} available for ${carPrice} on DriveSmart`,
+                        url: window.location.href,
+                    })
+                    .then(() => showToast('Shared successfully!', 'success'))
+                    .catch(error => console.log('Error sharing:', error));
+                } else {
+                    // Fallback: copy to clipboard
+                    const shareText = `${carName} - ${carPrice}\n${window.location.href}`;
+                    navigator.clipboard.writeText(shareText)
+                        .then(() => showToast('Link copied to clipboard', 'success'))
+                        .catch(() => showToast('Could not copy link', 'error'));
+                }
+            };
+            
+            // Update availability
+            window.updateAvailability = function() {
+                const availabilityBadge = document.querySelector('[style*="background: rgba(25, 135, 84, 0.1)"]') || 
+                                         document.querySelector('[style*="background: rgba(220, 53, 69, 0.1)"]');
+                
+                if (availabilityBadge) {
+                    const isAvailable = availabilityBadge.textContent.includes('Available');
+                    const newStatus = !isAvailable;
+                    
+                    // In a real app, you would make an API call here
+                    console.log(`Updating availability to: ${newStatus ? 'Available' : 'Booked'}`);
+                    
+                    // Update UI
+                    availabilityBadge.innerHTML = newStatus ? 
+                        '<span>✅</span> Available Now' : 
+                        '<span>⏳</span> Currently Booked';
+                    availabilityBadge.style.background = newStatus ? 
+                        'rgba(25, 135, 84, 0.1)' : 
+                        'rgba(220, 53, 69, 0.1)';
+                    availabilityBadge.style.color = newStatus ? '#198754' : '#dc3545';
+                    
+                    showToast(`Car marked as ${newStatus ? 'available' : 'unavailable'}`, 'success');
+                }
+            };
+            
+            // Show calendar
+            window.showCalendar = function() {
+                alert('Calendar view would open here. In a real app, this would show booking calendar.');
+                console.log('Opening booking calendar...');
+            };
+            
+            // Confirm car removal
+            window.confirmRemoveCar = function() {
+                if (confirm('Are you sure you want to remove this car from DriveSmart? This action cannot be undone.')) {
+                    // In a real app, you would make an API call here
+                    console.log('Removing car from listing...');
+                    showToast('Car removal request sent', 'success');
+                    
+                    // Redirect after a delay
+                    setTimeout(() => {
+                        window.location.href = '/user/cars';
+                    }, 1500);
+                }
+            };
+            
+            // Toast notification
+            function showToast(message, type) {
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 1rem;
+                    right: 1rem;
+                    background: ${type === 'success' ? '#198754' : type === 'error' ? '#dc3545' : '#ffc107'};
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 0.5rem;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                `;
+                
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                toast.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️'}</span>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(toast);
+                
+                // Remove toast after 3 seconds
+                setTimeout(() => {
+                    toast.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // B key - Book this car
+                if ((e.key === 'b' || e.key === 'B') && e.ctrlKey) {
+                    e.preventDefault();
+                    const bookBtn = document.querySelector('.btn-primary');
+                    if (bookBtn) bookBtn.click();
+                }
+                
+                // E key - Edit car
+                if ((e.key === 'e' || e.key === 'E') && e.ctrlKey) {
+                    e.preventDefault();
+                    const editBtn = document.querySelector('.btn-outline');
+                    if (editBtn) editBtn.click();
+                }
+                
+                // S key - Share
+                if ((e.key === 's' || e.key === 'S') && e.ctrlKey) {
+                    e.preventDefault();
+                    shareCar();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

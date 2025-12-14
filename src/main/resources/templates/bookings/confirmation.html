@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::scripts}, 'bookings')}">
+<head>
+    <title>Booking Confirmed - DriveSmart</title>
+</head>
+<body>
+    <main th:fragment="main-content">
+        <div style="min-height: 100vh; background: linear-gradient(135deg, rgba(167,165,198,0.08), rgba(102,206,214,0.08)); padding: 3rem 1rem;">
+            <div class="container">
+                <div class="card" style="max-width: 800px; margin: 0 auto; padding: 3rem; text-align: center;">
+                    <div style="width: 80px; height: 80px; background: rgba(102, 206, 214, 0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+                        <div style="width: 48px; height: 48px; background: var(--cta); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: white; font-size: 1.5rem;">✓</span>
+                        </div>
+                    </div>
+                    
+                    <h1 style="font-size: 2rem; color: var(--dark); margin-bottom: 0.5rem;">Booking Confirmed! 🎉</h1>
+                    <p class="text-secondary" style="margin-bottom: 2rem; font-size: 1.125rem;">
+                        Your booking has been successfully created. A confirmation email has been sent to your registered email address.
+                    </p>
+                    
+                    <div style="height: 2px; background: linear-gradient(to right, transparent, var(--border), transparent); margin: 2rem 0;"></div>
+                    
+                    <div style="text-align: left; margin-bottom: 2rem;">
+                        <h2 style="color: var(--dark); margin-bottom: 1.5rem; font-size: 1.25rem;">Booking Details</h2>
+                        
+                        <div class="card" style="border: 1px solid var(--border); padding: 1.5rem;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                                <div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="color: var(--text-secondary); font-size: 0.875rem;">Booking ID</div>
+                                        <div style="font-weight: 600; color: var(--dark); font-size: 1.125rem;" th:text="${booking.id}"></div>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="color: var(--text-secondary); font-size: 0.875rem;">Car</div>
+                                        <div style="font-weight: 600; color: var(--dark);" th:text="${booking.car.brand + ' ' + booking.car.model}"></div>
+                                    </div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="color: var(--text-secondary); font-size: 0.875rem;">Client</div>
+                                        <div style="font-weight: 600; color: var(--dark);" th:text="${booking.user.fullName}">Client Name</div>
+                                        <div style="color: var(--text-secondary); font-size: 0.875rem;" th:text="${booking.user.email}">Client Email</div>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="color: var(--text-secondary); font-size: 0.875rem;">Status</div>
+                                        <div style="font-weight: 600; color: #198754;">Confirmed</div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="color: var(--text-secondary); font-size: 0.875rem;">Dates</div>
+                                        <div style="font-weight: 600; color: var(--dark);" 
+                                             th:text="${#temporals.format(booking.startDate, 'MMM dd, yyyy') + ' to ' + #temporals.format(booking.endDate, 'MMM dd, yyyy')}"></div>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="color: var(--text-secondary); font-size: 0.875rem;">Total Days</div>
+                                        <div style="font-weight: 600; color: var(--dark);" 
+                                             th:text="${totalDays}"></div>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="color: var(--text-secondary); font-size: 0.875rem;">Total Price</div>
+                                        <div style="font-weight: 700; color: var(--dark); font-size: 1.25rem;" 
+                                             th:text="'$' + ${#numbers.formatDecimal(booking.totalPrice, 1, 2)}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="height: 2px; background: linear-gradient(to right, transparent, var(--border), transparent); margin: 2rem 0;"></div>
+                    
+                    <div class="flex justify-center gap-3 mt-4" style="flex-wrap: wrap;">
+                        <a th:href="@{/bookings}" class="btn btn-primary">View My Bookings</a>
+                        <a th:href="@{/cars}" class="btn btn-outline">Browse More Cars</a>
+                        <a th:href="@{/}" class="btn btn-secondary">Return to Home</a>
+                    </div>
+                    
+                    <div class="card mt-4" style="background: var(--bg-secondary);">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                            <span style="color: var(--accent);">📧</span>
+                            <div class="text-secondary" style="font-size: 0.875rem;">
+                                Confirmation email sent. Check your inbox (and spam folder).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

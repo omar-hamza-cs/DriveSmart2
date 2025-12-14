@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::scripts}, 'search')}">
+<head>
+    <title>Search Fleet - DriveSmart</title>
+</head>
+<body>
+    <main th:fragment="main-content">
+        <!-- Hero Section -->
+        <div class="card mb-4" style="background: linear-gradient(135deg, #A7A5C6, #8797B2); border: none; color: white;">
+            <div class="container text-center">
+                <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">Find Your Perfect Car</h1>
+                <p style="font-size: 1.125rem; opacity: 0.9;">Search through our fleet of premium vehicles</p>
+            </div>
+        </div>
+
+        <div class="container">
+            <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                <!-- Filters -->
+                <div style="flex: 1; min-width: 280px;">
+                    <div class="card mb-4">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h2 style="font-size: 1.25rem; font-weight: 600; color: #5D707F;">Filters</h2>
+                            <button onclick="resetFilters()" class="btn btn-outline" style="font-size: 0.875rem;">Reset All</button>
+                        </div>
+
+                        <!-- Search Input -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5D707F;">Search</label>
+                            <input type="text" id="searchInput" placeholder="Search cars..." 
+                                   style="width: 100%; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem;">
+                        </div>
+
+                        <!-- Price Range -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5D707F;">Price Range</label>
+                            <div style="display: flex; gap: 1rem;">
+                                <input type="number" id="minPrice" placeholder="Min" 
+                                       style="width: 100%; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem;">
+                                <input type="number" id="maxPrice" placeholder="Max" 
+                                       style="width: 100%; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem;">
+                            </div>
+                        </div>
+
+                        <!-- Vehicle Type -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5D707F;">Vehicle Type</label>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" class="typeFilter" value="sedan">
+                                    <span>Sedan</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" class="typeFilter" value="suv">
+                                    <span>SUV</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" class="typeFilter" value="truck">
+                                    <span>Truck</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" class="typeFilter" value="luxury">
+                                    <span>Luxury</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Transmission -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5D707F;">Transmission</label>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" class="transmissionFilter" value="automatic">
+                                    <span>Automatic</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" class="transmissionFilter" value="manual">
+                                    <span>Manual</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Seats -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5D707F;">Seats</label>
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <button class="btn btn-outline seatBtn" data-seats="2" style="font-size: 0.875rem;">2+</button>
+                                <button class="btn btn-outline seatBtn" data-seats="4" style="font-size: 0.875rem;">4+</button>
+                                <button class="btn btn-outline seatBtn" data-seats="5" style="font-size: 0.875rem;">5+</button>
+                                <button class="btn btn-outline seatBtn" data-seats="7" style="font-size: 0.875rem;">7+</button>
+                            </div>
+                        </div>
+
+                        <!-- Apply Button -->
+                        <button onclick="performSearch()" class="btn btn-primary" style="width: 100%;">Apply Filters</button>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div style="flex: 3; min-width: 300px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <div>
+                            <h2 style="font-size: 1.5rem; font-weight: 600; color: #5D707F;">Available Vehicles</h2>
+                            <p style="color: #6C757D;" id="resultCount" th:text="${#lists.size(cars)} + ' vehicles found'"></p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <label style="color: #6C757D; font-size: 0.875rem;">Sort by:</label>
+                            <select style="padding: 0.5rem; border: 1px solid #E9ECEF; border-radius: 0.5rem; font-size: 0.875rem;">
+                                <option>Relevance</option>
+                                <option>Price: Low to High</option>
+                                <option>Price: High to Low</option>
+                                <option>Newest First</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Results Grid -->
+                    <div class="grid-4" id="searchResults">
+                        <div class="card" th:each="c : ${cars}">
+                            <div style="background: #F8F9FA; height: 160px; border-radius: 0.5rem; margin-bottom: 1rem;">
+                                <img th:if="${c.hasImage()}" th:src="@{${c.imageUrl}}" alt="Car" style="width:100%; height:160px; object-fit: cover; border-radius: 0.5rem;" />
+                            </div>
+                            <h3 style="font-size: 1.25rem; font-weight: 600; color: #5D707F; margin-bottom: 0.5rem;" th:text="${c.brand} + ' ' + ${c.model} + ' ' + ${c.year}">Car</h3>
+                            <div style="color: #6C757D; font-size: 0.875rem; margin-bottom: 1rem;">
+                                <div th:text="'License: ' + ${c.licensePlate} + ' • ' + 'Color: ' + ${c.color}">Specs</div>
+                                <div>
+                                    <span th:text="${c.isAvailable} ? 'Available' : 'Unavailable'" th:style="${c.isAvailable} ? 'color:#66CED6' : 'color:#6C757D'">Available</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="font-size: 1.25rem; font-weight: 700; color: #66CED6;" th:text="'$' + ${c.pricePerDay} + '/day'">$0/day</div>
+                                <a th:href="@{'/cars/details?id=' + ${c.id}}" class="btn btn-outline" style="font-size: 0.875rem;">View</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem;">
+                        <button class="btn btn-outline" style="padding: 0.5rem 1rem;">← Previous</button>
+                        <button class="btn btn-primary" style="padding: 0.5rem 1rem;">1</button>
+                        <button class="btn btn-outline" style="padding: 0.5rem 1rem;">2</button>
+                        <button class="btn btn-outline" style="padding: 0.5rem 1rem;">3</button>
+                        <button class="btn btn-outline" style="padding: 0.5rem 1rem;">Next →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Search page loaded');
+                
+                // Initialize seat buttons
+                document.querySelectorAll('.seatBtn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        this.classList.toggle('btn-primary');
+                        this.classList.toggle('btn-outline');
+                    });
+                });
+                
+                // Filter functionality
+                document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch();
+                    }
+                });
+                // Enter key triggers search
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') { e.preventDefault(); performSearch(); }
+                    });
+                }
+            });
+
+            function performSearch() {
+                const q = document.getElementById('searchInput')?.value?.trim();
+                const url = q ? `/cars/search?query=${encodeURIComponent(q)}` : '/cars/search';
+                window.location.href = url;
+            }
+            
+            function resetFilters() {
+                document.getElementById('searchInput').value = '';
+                document.getElementById('minPrice').value = '';
+                document.getElementById('maxPrice').value = '';
+                
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    cb.checked = false;
+                });
+                
+                document.querySelectorAll('.seatBtn').forEach(btn => {
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-outline');
+                });
+                
+                console.log('Filters reset');
+            }
+        </script>
+    </th:block>
+</body>
+</html>

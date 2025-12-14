@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::scripts}, 'fleet')}">
+<head>
+    <title>Add New Car - DriveSmart</title>
+    
+    <th:block th:fragment="head">
+        <!-- NO STYLE TAGS - Using main.css only -->
+    </th:block>
+</head>
+
+<main th:fragment="main-content">
+    <!-- Main Container -->
+    <div class="container" style="padding: 2rem 1rem;">
+        
+        <!-- Page Header -->
+        <div class="flex justify-between items-center mb-4">
+            <div>
+                <h1 style="font-size: 1.75rem; color: var(--dark); margin-bottom: 0.25rem;">Add New Vehicle</h1>
+                <p class="text-secondary">Add a new car to your fleet</p>
+            </div>
+            <a th:href="@{/cars}" class="btn btn-outline">← Back to Fleet</a>
+        </div>
+
+        <!-- Alerts -->
+        <div th:if="${error}" class="card mb-4" style="background: rgba(220, 53, 69, 0.1); border-color: #dc3545;">
+            <div class="flex items-center gap-2" style="color: #dc3545;">
+                <span>⚠️</span>
+                <span th:text="${error}"></span>
+            </div>
+        </div>
+        
+        <div th:if="${success}" class="card mb-4" style="background: rgba(25, 135, 84, 0.1); border-color: #198754;">
+            <div class="flex items-center gap-2" style="color: #198754;">
+                <span>✅</span>
+                <span>Car added successfully!</span>
+            </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="card mb-4">
+            <form th:action="@{/cars/add}" th:object="${car}" method="post" enctype="multipart/form-data" id="carForm">
+                
+                <!-- Step Indicator -->
+                <div class="flex justify-center mb-8" style="position: relative;">
+                    <!-- Progress Line -->
+                    <div style="position: absolute; top: 20px; left: 0; right: 0; height: 2px; background: var(--border); z-index: 1;"></div>
+                    <div id="progressLine" style="position: absolute; top: 20px; left: 0; height: 2px; background: var(--cta); z-index: 2; width: 0%;"></div>
+                    
+                    <!-- Steps -->
+                    <div class="flex justify-between" style="width: 100%; max-width: 600px; position: relative; z-index: 3;">
+                        <div class="step-circle active" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-label" style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--cta);">Basic Info</div>
+                        </div>
+                        <div class="step-circle" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-label" style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">Details</div>
+                        </div>
+                        <div class="step-circle" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-label" style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">Review</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Basic Information -->
+                <div class="form-step active" id="step1">
+                    <h2 style="color: var(--dark); margin-bottom: 1.5rem; font-size: 1.25rem;">Vehicle Information</h2>
+                    
+                    <!-- Image Upload Section -->
+                    <div class="card mb-4" style="border: 2px dashed var(--border); cursor: pointer;" id="uploadArea">
+                        <div class="text-center" style="padding: 2rem;">
+                            <div style="width: 60px; height: 60px; background: var(--cta); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                                <span style="font-size: 1.5rem; color: white;">📷</span>
+                            </div>
+                            <h3 style="color: var(--dark); margin-bottom: 0.5rem;">Upload Car Photo</h3>
+                            <p class="text-secondary" style="margin-bottom: 1rem;">Click to select an image (JPG, PNG, max 5MB)</p>
+                            <input type="file" id="imageFile" name="imageFile" accept="image/*" 
+                                   style="display: none;" onchange="previewImage(this)">
+                            <div class="btn btn-outline" onclick="document.getElementById('imageFile').click()">Choose File</div>
+                        </div>
+                        <!-- Image Preview -->
+                        <img class="image-preview" id="imagePreview" alt="Car preview" 
+                             style="display: none; width: 100%; max-height: 300px; object-fit: cover; border-radius: 0.5rem; margin-top: 1rem;">
+                        <div id="fileInfo" style="display: none; padding: 1rem; background: var(--bg-secondary); border-radius: 0.5rem; margin-top: 1rem;">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div style="font-weight: 600; color: var(--dark);" id="fileName"></div>
+                                    <div class="text-secondary" style="font-size: 0.875rem;" id="fileSize"></div>
+                                </div>
+                                <button type="button" class="btn btn-outline" style="color: #dc3545; border-color: #dc3545;" onclick="removeImage()">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Basic Info Form -->
+                    <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin: 1.5rem 0;">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Brand *</label>
+                            <input type="text" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                   id="brand" name="brand" th:field="*{brand}" placeholder="e.g., Toyota" required>
+                            <div th:if="${#fields.hasErrors('brand')}" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;" th:errors="*{brand}"></div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Model *</label>
+                            <input type="text" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                   id="model" name="model" th:field="*{model}" placeholder="e.g., Camry" required>
+                            <div th:if="${#fields.hasErrors('model')}" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;" th:errors="*{model}"></div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Year *</label>
+                            <input type="number" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                   id="year" name="year" th:field="*{year}" placeholder="e.g., 2023" min="1990" max="2030" required>
+                            <div th:if="${#fields.hasErrors('year')}" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;" th:errors="*{year}"></div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Color *</label>
+                            <input type="text" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                   id="color" name="color" th:field="*{color}" placeholder="e.g., Red" required>
+                            <div th:if="${#fields.hasErrors('color')}" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;" th:errors="*{color}"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end gap-2 mt-4" style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                        <button type="button" class="btn btn-primary" onclick="nextStep(2)">
+                            Continue →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Vehicle Details -->
+                <div class="form-step" id="step2" style="display: none;">
+                    <h2 style="color: var(--dark); margin-bottom: 1.5rem; font-size: 1.25rem;">Vehicle Details</h2>
+                    
+                    <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin: 1.5rem 0;">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">License Plate *</label>
+                            <input type="text" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                   id="licensePlate" name="licensePlate" th:field="*{licensePlate}" placeholder="e.g., ABC-123" required>
+                            <div th:if="${#fields.hasErrors('licensePlate')}" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;" th:errors="*{licensePlate}"></div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Daily Rate ($) *</label>
+                            <input type="number" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                   id="pricePerDay" name="pricePerDay" th:field="*{pricePerDay}" placeholder="e.g., 49.99" step="0.01" min="0" required>
+                            <div th:if="${#fields.hasErrors('pricePerDay')}" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;" th:errors="*{pricePerDay}"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Removed fields not present in Car entity to avoid binding errors -->
+                    
+                    <div class="flex justify-between gap-2 mt-4" style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                        <button type="button" class="btn btn-outline" onclick="prevStep(1)">
+                            ← Back
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep(3)">
+                            Continue →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Review & Submit -->
+                <div class="form-step" id="step3" style="display: none;">
+                    <h2 style="color: var(--dark); margin-bottom: 1.5rem; font-size: 1.25rem;">Review & Submit</h2>
+                    
+                    <div class="card mb-4" style="background: rgba(102, 206, 214, 0.1); border-color: var(--cta);">
+                        <div class="flex items-center gap-2">
+                            <span style="color: var(--cta);">ℹ️</span>
+                            <div>Please review all the information before submitting.</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Summary Card -->
+                    <div class="card mb-4">
+                        <h3 style="color: var(--dark); margin-bottom: 1rem; font-weight: 600;">Vehicle Summary</h3>
+                        
+                        <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                            <div>
+                                <div style="margin-bottom: 1rem;">
+                                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Brand & Model</div>
+                                    <div style="font-weight: 600; color: var(--dark);" id="summaryBrandModel">-</div>
+                                </div>
+                                <div style="margin-bottom: 1rem;">
+                                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Year</div>
+                                    <div style="font-weight: 600; color: var(--dark);" id="summaryYear">-</div>
+                                </div>
+                                <div style="margin-bottom: 1rem;">
+                                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Color</div>
+                                    <div style="font-weight: 600; color: var(--dark);" id="summaryColor">-</div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div style="margin-bottom: 1rem;">
+                                    <div style="color: var(--text-secondary); font-size: 0.875rem;">License Plate</div>
+                                    <div style="font-weight: 600; color: var(--dark);" id="summaryLicense">-</div>
+                                </div>
+                                <div style="margin-bottom: 1rem;">
+                                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Daily Rate</div>
+                                    <div style="font-weight: 600; color: var(--dark);" id="summaryPrice">-</div>
+                                </div>
+                                <div style="margin-bottom: 1rem;">
+                                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Transmission</div>
+                                    <div style="font-weight: 600; color: var(--dark);" id="summaryTransmission">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Photo Preview in Summary -->
+                        <div id="summaryImagePreview" style="margin-top: 1rem; display: none;">
+                            <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem;">Car Photo</div>
+                            <img id="summaryImage" alt="Car preview" style="width: 200px; height: 120px; object-fit: cover; border-radius: 0.5rem;">
+                        </div>
+                        
+                        <!-- Confirmation Checkbox -->
+                        <div class="card mt-4" style="background: var(--bg-secondary);">
+                            <div class="flex items-center gap-2">
+                        <input type="checkbox" id="termsCheck" style="width: 18px; height: 18px;">
+                                <label for="termsCheck" style="cursor: pointer; color: var(--dark);">
+                                    I confirm that all information provided is accurate and this vehicle is available for rental
+                                </label>
+                            </div>
+                            <div id="termsError" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.5rem; display: none;">
+                                You must confirm before submitting
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between gap-2 mt-4" style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                        <button type="button" class="btn btn-outline" onclick="prevStep(2)">
+                            ← Back
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            ✅ Add Vehicle
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<th:block th:fragment="scripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentStep = 1;
+            
+            // Make upload area clickable
+            const uploadArea = document.getElementById('uploadArea');
+            if (uploadArea) {
+                uploadArea.addEventListener('click', function(e) {
+                    if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+                        document.getElementById('imageFile').click();
+                    }
+                });
+            }
+            
+            // Initialize step circles
+            document.querySelectorAll('.step-circle').forEach(circle => {
+                circle.addEventListener('click', function() {
+                    const step = parseInt(this.getAttribute('data-step'));
+                    if (step < currentStep) {
+                        goToStep(step);
+                    }
+                });
+            });
+            
+            // Update progress line
+            function updateProgressLine() {
+                const progressLine = document.getElementById('progressLine');
+                const progress = ((currentStep - 1) / 2) * 100; // 2 steps between 3 steps
+                if (progressLine) {
+                    progressLine.style.width = `${progress}%`;
+                }
+                
+                // Update step circles
+                document.querySelectorAll('.step-circle').forEach(circle => {
+                    const step = parseInt(circle.getAttribute('data-step'));
+                    const stepNumber = circle.querySelector('.step-number');
+                    const stepLabel = circle.querySelector('.step-label');
+                    
+                    if (step <= currentStep) {
+                        stepNumber.style.background = 'var(--cta)';
+                        stepNumber.style.color = 'white';
+                        stepLabel.style.color = 'var(--cta)';
+                    } else {
+                        stepNumber.style.background = 'var(--border)';
+                        stepNumber.style.color = 'var(--text-secondary)';
+                        stepLabel.style.color = 'var(--text-secondary)';
+                    }
+                    
+                    if (step === currentStep) {
+                        stepNumber.style.border = '2px solid var(--cta)';
+                    } else {
+                        stepNumber.style.border = 'none';
+                    }
+                });
+            }
+            
+            // Image preview function with file validation
+            window.previewImage = function(input) {
+                if (input.files && input.files[0]) {
+                    const file = input.files[0];
+                    const maxSize = 5 * 1024 * 1024; // 5MB
+                    
+                    // Check file size
+                    if (file.size > maxSize) {
+                        alert('File size must be less than 5MB');
+                        input.value = '';
+                        return;
+                    }
+                    
+                    // Check file type
+                    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                    if (!validTypes.includes(file.type)) {
+                        alert('Please select a valid image file (JPG, PNG, GIF)');
+                        input.value = '';
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        // Update upload area
+                        const uploadArea = document.getElementById('uploadArea');
+                        uploadArea.style.borderStyle = 'solid';
+                        uploadArea.style.borderColor = 'var(--cta)';
+                        
+                        // Show image preview
+                        const preview = document.getElementById('imagePreview');
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                        
+                        // Show file info
+                        const fileInfo = document.getElementById('fileInfo');
+                        const fileName = document.getElementById('fileName');
+                        const fileSize = document.getElementById('fileSize');
+                        
+                        fileName.textContent = file.name;
+                        fileSize.textContent = formatFileSize(file.size);
+                        fileInfo.style.display = 'block';
+                        
+                        // Update summary preview
+                        const summaryImage = document.getElementById('summaryImage');
+                        const summaryImagePreview = document.getElementById('summaryImagePreview');
+                        if (summaryImage) {
+                            summaryImage.src = e.target.result;
+                            summaryImagePreview.style.display = 'block';
+                        }
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+            
+            // Remove image function
+            window.removeImage = function() {
+                const input = document.getElementById('imageFile');
+                input.value = '';
+                
+                const preview = document.getElementById('imagePreview');
+                preview.style.display = 'none';
+                preview.src = '';
+                
+                const fileInfo = document.getElementById('fileInfo');
+                fileInfo.style.display = 'none';
+                
+                const uploadArea = document.getElementById('uploadArea');
+                uploadArea.style.borderStyle = 'dashed';
+                uploadArea.style.borderColor = 'var(--border)';
+                
+                const summaryImagePreview = document.getElementById('summaryImagePreview');
+                summaryImagePreview.style.display = 'none';
+            }
+            
+            // Format file size
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // Step navigation functions
+            window.nextStep = function(step) {
+                // Validate current step
+                const currentSection = document.getElementById(`step${currentStep}`);
+                const requiredFields = currentSection.querySelectorAll('[required]');
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.style.borderColor = '#dc3545';
+                    } else {
+                        field.style.borderColor = 'var(--border)';
+                    }
+                });
+                
+                // Image is optional
+                
+                if (!isValid) {
+                    currentSection.scrollIntoView({ behavior: 'smooth' });
+                    return;
+                }
+                
+                // Go to next step
+                goToStep(step);
+                
+                // Update summary if going to step 3
+                if (step === 3) {
+                    updateCarSummary();
+                }
+            }
+            
+            window.prevStep = function(step) {
+                goToStep(step);
+            }
+            
+            function goToStep(step) {
+                // Hide all steps
+                document.querySelectorAll('.form-step').forEach(stepEl => {
+                    stepEl.style.display = 'none';
+                });
+                
+                // Show target step
+                currentStep = step;
+                document.getElementById(`step${step}`).style.display = 'block';
+                
+                // Update progress
+                updateProgressLine();
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            
+            // Update car summary
+            window.updateCarSummary = function() {
+                document.getElementById('summaryBrandModel').textContent = 
+                    `${document.getElementById('brand').value} ${document.getElementById('model').value}`;
+                
+                document.getElementById('summaryYear').textContent = document.getElementById('year').value;
+                document.getElementById('summaryColor').textContent = document.getElementById('color').value;
+                document.getElementById('summaryLicense').textContent = document.getElementById('licensePlate').value;
+                
+                // Format price
+                const price = parseFloat(document.getElementById('pricePerDay').value);
+                document.getElementById('summaryPrice').textContent = 
+                    isNaN(price) ? '-$' : `$${price.toFixed(2)}/day`;
+                
+                // Get transmission text
+                const transmissionSelect = document.getElementById('transmission');
+                const transmissionText = transmissionSelect.options[transmissionSelect.selectedIndex].text;
+                document.getElementById('summaryTransmission').textContent = transmissionText || '-';
+                
+                // Show image in summary if exists
+                const preview = document.getElementById('imagePreview');
+                const summaryImage = document.getElementById('summaryImage');
+                const summaryImagePreview = document.getElementById('summaryImagePreview');
+                
+                if (preview.style.display !== 'none' && preview.src) {
+                    summaryImage.src = preview.src;
+                    summaryImagePreview.style.display = 'block';
+                }
+            }
+            
+            // Form is submitted directly by the submit button
+            
+            // Initialize
+            updateProgressLine();
+        });
+    </script>
+</th:block>
+</html>

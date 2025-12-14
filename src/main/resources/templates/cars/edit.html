@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::scripts}, 'cars')}">
+<head>
+    <title>Edit Vehicle - DriveSmart</title>
+</head>
+<body>
+    <main th:fragment="main-content">
+        <div class="container" style="padding: 2rem 1rem;">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h1 style="font-size: 1.75rem; color: var(--dark); margin-bottom: 0.25rem;">Edit Vehicle</h1>
+                    <p class="text-secondary">Update car details and information</p>
+                </div>
+                <a th:href="@{/cars}" class="btn btn-outline">← Back to Fleet</a>
+            </div>
+
+            <div th:if="${error}" class="card mb-4" style="background: rgba(220, 53, 69, 0.1); border-color: #dc3545;">
+                <div class="flex items-center gap-2" style="color: #dc3545;">
+                    <span>⚠️</span>
+                    <span th:text="${error}"></span>
+                </div>
+            </div>
+            
+            <div th:if="${success}" class="card mb-4" style="background: rgba(25, 135, 84, 0.1); border-color: #198754;">
+                <div class="flex items-center gap-2" style="color: #198754;">
+                    <span>✅</span>
+                    <span th:text="${success}"></span>
+                </div>
+            </div>
+
+            <div th:if="${car.imageUrl}" class="card mb-4">
+                <div style="margin-bottom: 1rem;">
+                    <div style="font-weight: 600; color: var(--dark); margin-bottom: 0.5rem;">Current Car Photo</div>
+                    <img th:src="${car.imageUrl}" alt="Current car image" 
+                         style="width: 300px; max-width: 100%; height: auto; border-radius: 0.5rem; border: 1px solid var(--border);">
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <form th:action="@{/cars/edit}" th:object="${car}" method="post" enctype="multipart/form-data">
+                    <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin: 1.5rem 0;">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Brand *</label>
+                            <input type="text" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                   th:field="*{brand}" placeholder="e.g., Toyota" required>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Model *</label>
+                            <input type="text" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                   th:field="*{model}" placeholder="e.g., Camry" required>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Year *</label>
+                            <input type="number" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                   th:field="*{year}" placeholder="e.g., 2023" min="1990" max="2030" required>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Color *</label>
+                            <input type="text" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                   th:field="*{color}" placeholder="e.g., Red" required>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">License Plate *</label>
+                            <input type="text" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                   th:field="*{licensePlate}" placeholder="e.g., ABC-123" required>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Daily Rate ($) *</label>
+                            <input type="number" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                   th:field="*{pricePerDay}" placeholder="e.g., 49.99" step="0.01" min="0" required>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Available</label>
+                            <label style="display:flex; align-items:center; gap:0.5rem">
+                                <input type="checkbox" th:field="*{isAvailable}">
+                                <span>Vehicle is available</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Maintenance</label>
+                            <label style="display:flex; align-items:center; gap:0.5rem">
+                                <input type="checkbox" th:field="*{inMaintenance}">
+                                <span>Vehicle is in maintenance</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    <div class="card mb-4" style="border: 2px dashed var(--border);">
+                        <div style="padding: 1.5rem;">
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                <div style="width: 40px; height: 40px; background: var(--cta); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: white;">📷</span>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--dark);">Update Car Photo (Optional)</div>
+                                    <div class="text-secondary" style="font-size: 0.875rem;">Upload new image to replace current photo</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3">
+                                <input type="file" name="imageFile" accept="image/*" id="imageFile" 
+                                       style="flex: 1; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                                <div class="text-secondary" style="font-size: 0.875rem;">JPG, PNG, max 5MB</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between gap-2 mt-4" style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                        <a th:href="@{/cars}" class="btn btn-outline">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const imageFileInput = document.getElementById('imageFile');
+                if (imageFileInput) {
+                    imageFileInput.addEventListener('change', function(e) {
+                        if (this.files && this.files[0]) {
+                            const file = this.files[0];
+                            const maxSize = 5 * 1024 * 1024;
+                            if (file.size > maxSize) {
+                                alert('File size must be less than 5MB');
+                                this.value = '';
+                            }
+                        }
+                    });
+                }
+                
+                const form = document.querySelector('form');
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        const requiredFields = form.querySelectorAll('[required]');
+                        let isValid = true;
+                        
+                        requiredFields.forEach(field => {
+                            if (!field.value.trim()) {
+                                isValid = false;
+                                field.style.borderColor = '#dc3545';
+                            } else {
+                                field.style.borderColor = 'var(--border)';
+                            }
+                        });
+                        
+                        if (!isValid) {
+                            e.preventDefault();
+                            alert('Please fill in all required fields');
+                        }
+                    });
+                }
+            });
+        </script>
+    </th:block>
+</body>
+</html>

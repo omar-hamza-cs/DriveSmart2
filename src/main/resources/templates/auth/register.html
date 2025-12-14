@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - DriveSmart</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="icon" href="/images/logov1-removebg-preview.png" type="image/png">
+    <style>
+        /* ONLY inline styles for layout */
+        .register-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #6D8A96 0%, #A7A5C6 100%);
+            padding: 1rem;
+        }
+        .register-container {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 32rem;
+            box-shadow: 0 20px 40px rgba(93, 112, 127, 0.2);
+        }
+        .brand-logo {
+            height: 4rem;
+            width: auto;
+            margin-bottom: 1rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .password-input {
+            position: relative;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6C757D;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        .password-strength {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: #F8F9FA;
+            border-radius: 0.5rem;
+            border: 1px solid #E9ECEF;
+        }
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-page">
+        <div class="register-container">
+            <!-- Brand Section -->
+            <div class="text-center mb-4">
+                <img th:src="@{/images/logov1-removebg-preview.png}" alt="DriveSmart Logo" class="brand-logo">
+                <h1 style="font-size: 1.75rem; font-weight: 700; color: #5D707F; margin-bottom: 0.5rem;">
+                    Create Your Account
+                </h1>
+                <p style="color: #6C757D;">Join our professional fleet management platform</p>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div th:if="${param.success}" class="mb-3" style="background: rgba(102, 206, 214, 0.1); border: 1px solid #66CED6; color: #66CED6; padding: 1rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>✅</span>
+                <span>Account created successfully! Welcome to DriveSmart.</span>
+            </div>
+
+            <div th:if="${param.error}" class="mb-3" style="background: rgba(255, 107, 107, 0.1); border: 1px solid #FF6B6B; color: #FF6B6B; padding: 1rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>⚠️</span>
+                <span th:text="${errorMessage ?: 'Registration failed. Please try again.'}"></span>
+            </div>
+
+            <!-- Registration Form -->
+            <form id="registerForm" th:action="@{/register}" method="post" th:object="${user}" novalidate>
+                <!-- Full Name -->
+                <div class="mb-3">
+                    <label for="fullName" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5D707F;">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" th:field="*{fullName}" 
+                           required minlength="2" maxlength="100" placeholder="John Smith"
+                           style="width: 100%; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem; font-size: 1rem;">
+                </div>
+
+                <!-- Contact Information -->
+                <div class="mb-3">
+                    <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5D707F;">Email Address</label>
+                    <input type="email" id="email" name="email" th:field="*{email}" 
+                           required placeholder="name@company.com" autocomplete="email"
+                           style="width: 100%; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem; font-size: 1rem;">
+                </div>
+
+                <div class="mb-3">
+                    <label for="phoneNumber" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5D707F;">Phone Number</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" th:field="*{phoneNumber}" 
+                           required placeholder="+1 (555) 123-4567" pattern="^[\+]?[1-9][\d]{0,15}$" autocomplete="tel"
+                           style="width: 100%; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem; font-size: 1rem;">
+                </div>
+
+                <!-- Password Fields -->
+                <div class="mb-3">
+                    <label for="password" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5D707F;">Password</label>
+                    <div class="password-input">
+                        <input type="password" id="password" name="password" th:field="*{password}" 
+                               required minlength="8" placeholder="••••••••" autocomplete="new-password"
+                               style="width: 100%; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem; font-size: 1rem;">
+                        <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                            👁️
+                        </button>
+                    </div>
+                    <div class="password-strength" id="passwordStrength">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
+                            <div style="flex: 1; height: 6px; background: #E9ECEF; border-radius: 3px; overflow: hidden; margin: 0 0.5rem;">
+                                <div id="strengthMeter" style="height: 100%; width: 0%; border-radius: 3px; background: #FF6B6B;"></div>
+                            </div>
+                            <span id="strengthText" style="font-size: 0.75rem; font-weight: 600;">Weak</span>
+                        </div>
+                        <div id="strengthHints" style="font-size: 0.75rem; color: #6C757D;">
+                            Use 8+ characters with uppercase, lowercase, number & symbol
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Role Selection -->
+                <div class="mb-3">
+                    <label for="role" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5D707F;">Role</label>
+                    <select id="role" name="role" th:field="*{role}" required
+                            style="width: 100%; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem; font-size: 1rem;">
+                        <option value="" disabled selected>Select role</option>
+                        <option value="ADMIN">Admin</option>
+                        <option value="WORKER">Worker</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="confirmPassword" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5D707F;">Confirm Password</label>
+                    <div class="password-input">
+                        <input type="password" id="confirmPassword" required placeholder="••••••••" autocomplete="new-password"
+                               style="width: 100%; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem; font-size: 1rem;">
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                            👁️
+                        </button>
+                    </div>
+                    <div id="passwordMatchFeedback" style="color: #FF6B6B; font-size: 0.875rem; margin-top: 0.25rem; display: none;">
+                        Passwords do not match
+                    </div>
+                </div>
+
+                <!-- Terms Acceptance -->
+                <div class="mb-4" style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                    <input type="checkbox" id="terms" name="terms" required style="width: 1.25rem; height: 1.25rem; margin-top: 0.25rem;">
+                    <label for="terms" style="font-size: 0.875rem; color: #5D707F; line-height: 1.4;">
+                        I accept the <a href="/terms" style="color: #66CED6; text-decoration: none;">Terms of Service</a> and
+                        <a href="/privacy" style="color: #66CED6; text-decoration: none;">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+            </form>
+
+            <!-- Footer Links -->
+            <div class="text-center mt-4" style="padding-top: 1.5rem; border-top: 1px solid #E9ECEF;">
+                <p style="color: #6C757D; font-size: 0.875rem; margin-bottom: 0.5rem;">
+                    Already have an account?
+                </p>
+                <a th:href="@{/login}" style="color: #66CED6; text-decoration: none; font-weight: 600; font-size: 0.875rem;">
+                    Sign in instead
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password visibility toggle
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = (input.type === 'password') ? 'text' : 'password';
+        }
+
+        // Real-time password strength checking
+        function checkPasswordStrength(password) {
+            const meter = document.getElementById('strengthMeter');
+            const text = document.getElementById('strengthText');
+            const hints = document.getElementById('strengthHints');
+
+            let score = 0;
+            const checks = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                numbers: /\d/.test(password),
+                symbols: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+
+            Object.values(checks).forEach(check => check && score++);
+
+            if (score <= 2) {
+                meter.style.background = '#FF6B6B';
+                meter.style.width = '33%';
+                text.textContent = 'Weak';
+                hints.textContent = 'Add uppercase, numbers, and symbols';
+            } else if (score <= 4) {
+                meter.style.background = '#FFD93D';
+                meter.style.width = '66%';
+                text.textContent = 'Medium';
+                hints.textContent = 'Password is acceptable but could be stronger';
+            } else {
+                meter.style.background = '#66CED6';
+                meter.style.width = '100%';
+                text.textContent = 'Strong';
+                hints.textContent = 'Excellent! Your password is secure';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registerForm');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+
+            // Password strength checker
+            passwordInput.addEventListener('input', function() {
+                checkPasswordStrength(this.value);
+            });
+
+            // Password confirmation checker
+            confirmPasswordInput.addEventListener('blur', function() {
+                const feedback = document.getElementById('passwordMatchFeedback');
+                if (this.value && this.value !== passwordInput.value) {
+                    feedback.style.display = 'block';
+                } else {
+                    feedback.style.display = 'none';
+                }
+            });
+
+            // Form validation
+            form.addEventListener('submit', function(e) {
+                const email = document.getElementById('email').value.trim();
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                const terms = document.getElementById('terms').checked;
+
+                let isValid = true;
+
+                // Email validation
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    showToast('Please enter a valid email address', 'error');
+                    isValid = false;
+                }
+
+                // Password validation
+                if (password.length < 8) {
+                    showToast('Password must be at least 8 characters', 'error');
+                    isValid = false;
+                }
+
+                // Password confirmation
+                if (password !== confirmPassword) {
+                    showToast('Passwords do not match', 'error');
+                    isValid = false;
+                }
+
+                // Terms acceptance
+                if (!terms) {
+                    showToast('You must accept the terms and conditions', 'error');
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                } else {
+                    // Show loading state
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Creating account...';
+                }
+            });
+        });
+
+        function showToast(message, type = 'info') {
+            // Simple toast implementation
+            alert(message); // Replace with proper toast in production
+        }
+    </script>
+</body>
+</html>

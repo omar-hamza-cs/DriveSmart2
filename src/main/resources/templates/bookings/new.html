@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::scripts}, 'new-booking')}">
+<head>
+    <title>Create Booking - DriveSmart</title>
+</head>
+<body>
+    <main th:fragment="main-content">
+        <div class="container">
+            <!-- Header -->
+            <div class="mb-4">
+                <h1 style="font-size: 1.75rem; font-weight: bold; color: #5D707F;">Create New Booking</h1>
+                <p style="color: #6C757D;">Select customer, car, and dates for a new booking</p>
+            </div>
+
+            <!-- Progress Steps -->
+            <div class="card mb-4">
+                <div style="display: flex; justify-content: space-between; position: relative; padding: 1.5rem;">
+                    <!-- Line -->
+                    <div style="position: absolute; top: 2rem; left: 10%; right: 10%; height: 2px; background: #E9ECEF; z-index: 1;"></div>
+                    
+                    <!-- Step 1 -->
+                    <div style="position: relative; z-index: 2; text-align: center;">
+                        <div style="width: 2.5rem; height: 2.5rem; background: #66CED6; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin: 0 auto 0.5rem;">1</div>
+                        <div style="font-weight: 600; color: #5D707F; font-size: 0.875rem;">Customer</div>
+                    </div>
+                    
+                    <!-- Step 2 -->
+                    <div style="position: relative; z-index: 2; text-align: center;">
+                        <div style="width: 2.5rem; height: 2.5rem; background: #E9ECEF; color: #6C757D; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin: 0 auto 0.5rem;">2</div>
+                        <div style="color: #6C757D; font-size: 0.875rem;">Car</div>
+                    </div>
+                    
+                    <!-- Step 3 -->
+                    <div style="position: relative; z-index: 2; text-align: center;">
+                        <div style="width: 2.5rem; height: 2.5rem; background: #E9ECEF; color: #6C757D; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin: 0 auto 0.5rem;">3</div>
+                        <div style="color: #6C757D; font-size: 0.875rem;">Dates</div>
+                    </div>
+                    
+                    <!-- Step 4 -->
+                    <div style="position: relative; z-index: 2; text-align: center;">
+                        <div style="width: 2.5rem; height: 2.5rem; background: #E9ECEF; color: #6C757D; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin: 0 auto 0.5rem;">4</div>
+                        <div style="color: #6C757D; font-size: 0.875rem;">Confirm</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Form -->
+            <form th:action="@{/bookings}" method="post" class="card">
+                <input type="hidden" name="carId" th:value="${car.id}" />
+                <!-- Car Summary -->
+                <div style="margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: #5D707F; margin-bottom: 1rem;">Selected Car</h2>
+                    <div class="card" style="display:flex; gap:1rem; align-items:center;">
+                        <div style="flex:0 0 160px; background:#F8F9FA; height:100px; border-radius:0.5rem;">
+                            <img th:if="${car.hasImage()}" th:src="@{${car.imageUrl}}" alt="Car" style="width:100%; height:100%; object-fit:cover; border-radius:0.5rem;" />
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-weight:600; color:#5D707F;"> <span th:text="${car.brand}">Brand</span> <span th:text="${car.model}">Model</span> <span th:text="${car.year}">Year</span></div>
+                            <div style="color:#6C757D; font-size:0.875rem;">License: <span th:text="${car.licensePlate}">ABC-123</span></div>
+                            <div style="color:#66CED6; font-weight:700;">$<span th:text="${car.pricePerDay}">0</span>/day</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Car Selection -->
+                <div style="margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: #5D707F; margin-bottom: 1rem;">Select Car</h2>
+                    <div class="grid-4">
+                        <div class="card" style="cursor: pointer; text-align: center;">
+                            <div style="background: #F8F9FA; height: 120px; border-radius: 0.5rem; margin-bottom: 1rem;"></div>
+                            <div style="font-weight: 600; color: #5D707F; margin-bottom: 0.5rem;">Audi A3</div>
+                            <div style="color: #66CED6; font-weight: 700; margin-bottom: 0.5rem;">$89/day</div>
+                            <div style="color: #6C757D; font-size: 0.875rem;">Available</div>
+                        </div>
+                        <div class="card" style="cursor: pointer; text-align: center;">
+                            <div style="background: #F8F9FA; height: 120px; border-radius: 0.5rem; margin-bottom: 1rem;"></div>
+                            <div style="font-weight: 600; color: #5D707F; margin-bottom: 0.5rem;">Mercedes C-Class</div>
+                            <div style="color: #66CED6; font-weight: 700; margin-bottom: 0.5rem;">$129/day</div>
+                            <div style="color: #6C757D; font-size: 0.875rem;">Available</div>
+                        </div>
+                        <div class="card" style="cursor: pointer; text-align: center;">
+                            <div style="background: #F8F9FA; height: 120px; border-radius: 0.5rem; margin-bottom: 1rem;"></div>
+                            <div style="font-weight: 600; color: #5D707F; margin-bottom: 0.5rem;">BMW X5</div>
+                            <div style="color: #66CED6; font-weight: 700; margin-bottom: 0.5rem;">$199/day</div>
+                            <div style="color: #6C757D; font-size: 0.875rem;">Booked</div>
+                        </div>
+                        <div class="card" style="cursor: pointer; text-align: center;">
+                            <div style="background: #F8F9FA; height: 120px; border-radius: 0.5rem; margin-bottom: 1rem;"></div>
+                            <div style="font-weight: 600; color: #5D707F; margin-bottom: 0.5rem;">Toyota Camry</div>
+                            <div style="color: #66CED6; font-weight: 700; margin-bottom: 0.5rem;">$69/day</div>
+                            <div style="color: #6C757D; font-size: 0.875rem;">Available</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date Selection -->
+                <div style="margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: #5D707F; margin-bottom: 1rem;">Select Dates</h2>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 200px;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5D707F;">Pick-up Date</label>
+                            <input type="date" name="startDate" th:attr="${'min=' + minDate}" required style="width: 100%; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem;">
+                        </div>
+                        <div style="flex: 1; min-width: 200px;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5D707F;">Return Date</label>
+                            <input type="date" name="endDate" th:attr="${'min=' + minDate}" required style="width: 100%; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Extras -->
+                <div style="margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: #5D707F; margin-bottom: 1rem;">Add Extras</h2>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem;">
+                            <input type="checkbox">
+                            <span>Full Insurance (+$15/day)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem;">
+                            <input type="checkbox">
+                            <span>GPS Navigation (+$8/day)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem;">
+                            <input type="checkbox">
+                            <span>Child Seat (+$5/day)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+
+                <!-- Submit Button -->
+                <div style="display: flex; gap: 1rem;">
+                    <a th:href="@{/bookings}" class="btn btn-outline" style="flex: 1;">Cancel</a>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Create Booking</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('New booking page loaded');
+                
+                // Set default dates
+                const today = new Date().toISOString().split('T')[0];
+                const returnDate = new Date();
+                returnDate.setDate(returnDate.getDate() + 3);
+                const returnDateStr = returnDate.toISOString().split('T')[0];
+                
+                // Set date inputs (simplified - in real app, you'd set the values)
+                console.log('Default pickup:', today);
+                console.log('Default return:', returnDateStr);
+                
+                // Car selection
+                document.querySelectorAll('.card[style*="cursor: pointer"]').forEach(card => {
+                    card.addEventListener('click', function() {
+                        // Remove selection from all cards
+                        document.querySelectorAll('.card[style*="cursor: pointer"]').forEach(c => {
+                            c.style.border = '1px solid #E9ECEF';
+                        });
+                        
+                        // Select this card
+                        this.style.border = '2px solid #66CED6';
+                    });
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html>

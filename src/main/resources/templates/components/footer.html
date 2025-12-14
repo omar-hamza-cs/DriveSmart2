@@ -1,0 +1,283 @@
+<!-- templates/components/footer.html -->
+<footer class="main-footer">
+    <div class="footer-container">
+        <div class="footer-grid">
+            <!-- Company Info -->
+            <div class="footer-section">
+                <h3 class="footer-title">
+                    <span class="footer-logo">Drive<span class="logo-highlight">Smart</span></span>
+                </h3>
+                <p class="footer-description">
+                    Your trusted partner for premium vehicle rentals. 
+                    Quality service, competitive prices, and customer satisfaction guaranteed.
+                </p>
+                <div class="footer-social">
+                    <a href="#" class="social-link" title="Facebook">Fb</a>
+                    <a href="#" class="social-link" title="Twitter">Tw</a>
+                    <a href="#" class="social-link" title="Instagram">Ig</a>
+                    <a href="#" class="social-link" title="LinkedIn">Li</a>
+                </div>
+            </div>
+            
+            <!-- Quick Links -->
+            <div class="footer-section">
+                <h3 class="footer-title">Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/cars">Browse Cars</a></li>
+                    <li><a href="/bookings">Bookings</a></li>
+                    <li><a href="/user/profile">My Account</a></li>
+                    <li><a href="/login">Login</a></li>
+                </ul>
+            </div>
+            
+            <!-- Services -->
+            <div class="footer-section">
+                <h3 class="footer-title">Our Services</h3>
+                <ul class="footer-links">
+                    <li><a href="/cars/search">Car Search</a></li>
+                    <li><a href="/bookings">Booking Management</a></li>
+                    <li><a href="/cars/add">Add Car</a></li>
+                    <li><a href="/admin">Admin Panel</a></li>
+                    <li><a href="/support">Support</a></li>
+                </ul>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="footer-section">
+                <h3 class="footer-title">Contact Us</h3>
+                <ul class="contact-info">
+                    <li><i class="contact-icon">📍</i> 123 Rental Street, City, Country</li>
+                    <li><i class="contact-icon">📞</i> +1 (555) 123-4567</li>
+                    <li><i class="contact-icon">✉️</i> info@drivesmart.com</li>
+                    <li><i class="contact-icon">🕐</i> Mon-Fri: 9AM-6PM</li>
+                </ul>
+                <div class="newsletter">
+                    <h4>Stay Updated</h4>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Your email" class="newsletter-input">
+                        <button class="newsletter-btn">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="copyright">
+                © 2024 DriveSmart. All rights reserved.
+            </div>
+            <div class="footer-legal">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Cookie Policy</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .main-footer {
+        background: var(--dark-slate);
+        color: #ffffff;
+        margin-top: 50px;
+        padding-top: 40px;
+        border-top: 5px solid var(--bright-cyan);
+    }
+    
+    .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .footer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+    
+    .footer-title {
+        color: var(--bright-cyan);
+        margin-bottom: 20px;
+        font-size: 18px;
+        border-bottom: 2px solid var(--bright-cyan);
+        padding-bottom: 10px;
+        display: inline-block;
+    }
+    
+    .footer-logo {
+        font-size: 24px;
+        font-weight: bold;
+    }
+    
+    .logo-highlight {
+        color: #ecf0f1;
+    }
+    
+    .footer-description {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        color: var(--text-secondary);
+    }
+    
+    .footer-social {
+        display: flex;
+        gap: 15px;
+    }
+    
+    .social-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: rgba(102, 206, 214, 0.1);
+        border-radius: 50%;
+        font-size: 20px;
+        color: var(--bright-cyan);
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+    
+    .social-link:hover {
+        background: var(--bright-cyan);
+        color: white;
+        transform: translateY(-3px);
+    }
+    
+    .footer-links {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .footer-links li {
+        margin-bottom: 12px;
+    }
+    
+    .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: color 0.3s;
+    }
+    
+    .footer-links a:hover {
+        color: var(--bright-cyan);
+    }
+    
+    .contact-info {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 20px;
+    }
+    
+    .contact-info li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+    
+    .contact-icon {
+        color: var(--bright-cyan);
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+    
+    .newsletter h4 {
+        margin-bottom: 15px;
+        color: #ecf0f1;
+        font-size: 16px;
+    }
+    
+    .newsletter-form {
+        display: flex;
+        gap: 5px;
+    }
+    
+    .newsletter-input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background: rgba(255,255,255,0.1);
+        color: #ffffff;
+    }
+    
+    .newsletter-input::placeholder {
+        color: var(--text-secondary);
+    }
+    
+    .newsletter-btn {
+        background: var(--accent);
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    .newsletter-btn:hover {
+        background: var(--accent-hover);
+    }
+    
+    .footer-bottom {
+        border-top: 1px solid var(--border-color);
+        padding: 20px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    
+    .copyright {
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+    
+    .footer-legal {
+        display: flex;
+        gap: 20px;
+    }
+    
+    .footer-legal a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.3s;
+    }
+    
+    .footer-legal a:hover {
+        color: var(--bright-cyan);
+    }
+    
+    @media (max-width: 768px) {
+        .footer-bottom {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .footer-legal {
+            justify-content: center;
+        }
+    }
+</style>
+
+<script>
+    document.querySelector('.newsletter-btn').addEventListener('click', function() {
+        const email = document.querySelector('.newsletter-input').value;
+        if (email && email.includes('@')) {
+            alert('Thank you for subscribing!');
+            document.querySelector('.newsletter-input').value = '';
+        } else {
+            alert('Please enter a valid email address.');
+        }
+    });
+</script>

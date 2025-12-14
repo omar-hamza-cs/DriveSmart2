@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" th:fragment="layout(title, mainContent, scripts, pageClass)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/images/logov1-removebg-preview.png">
+    <title th:replace="${title}">DriveSmart</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="icon" th:href="@{/images/logov1-removebg-preview.png}" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/js/fullscreen.js" defer></script>
+    <th:block th:replace="${head} ?: ~{}"></th:block>
+</head>
+<body>
+    <!-- Header/Navigation -->
+    <header class="card" style="background: var(--dark); color: white; padding: 1rem; margin-bottom: 1rem;">
+        <div class="container">
+            <div class="header-bar">
+                <div class="flex items-center gap-3">
+                    <img th:src="@{/images/logov1-removebg-preview.png}" alt="DriveSmart Logo" style="height: 40px;">
+                    <div>
+                        <h1 style="font-size: 1.25rem; font-weight: 600;">DriveSmart</h1>
+                        <p style="font-size: 0.875rem; opacity: 0.8;">Car Rental Management</p>
+                    </div>
+                </div>
+                <nav>
+                    <div class="nav-links">
+                        <a th:href="@{/}" class="btn btn-outline" th:classappend="${pageClass} == 'home' ? 'active' : ''">Home</a>
+                        <a th:href="@{/cars}" class="btn btn-outline" th:classappend="${pageClass} == 'cars' ? 'active' : ''">Cars</a>
+                        <a th:if="${#authorization.expression('hasAnyRole(''ADMIN'',''WORKER'')')}" th:href="@{/customers}" class="btn btn-outline" th:classappend="${pageClass} == 'customers' ? 'active' : ''">Customers</a>
+                        <a th:href="@{/bookings}" class="btn btn-outline" th:classappend="${pageClass} == 'bookings' ? 'active' : ''">Bookings</a>
+                        <a th:href="@{/admin}" class="btn btn-outline" th:classappend="${pageClass} == 'admin' ? 'active' : ''">Admin</a>
+                        <a th:href="@{/user/profile}" class="btn btn-outline" th:classappend="${pageClass} == 'profile' ? 'active' : ''">Profile</a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div th:replace="${mainContent}"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="card" style="margin-top: 2rem; background: var(--bg-secondary); padding: 1.5rem;">
+        <div class="container">
+            <div class="text-center">
+                <p style="color: var(--text-secondary);">© 2024 DriveSmart Car Rental Management System</p>
+                <p style="color: var(--text-secondary); font-size: 0.875rem;">For internal use by company owners and workers only</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <th:block th:replace="${scripts} ?: ~{}"></th:block>
+</body>
+</html>

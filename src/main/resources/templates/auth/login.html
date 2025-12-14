@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DriveSmart</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="icon" href="/images/logov1-removebg-preview.png" type="image/png">
+    <style>
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #A7A5C6 0%, #6D8A96 100%);
+            padding: 1rem;
+        }
+        .login-container {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 28rem;
+            box-shadow: 0 20px 40px rgba(93, 112, 127, 0.2);
+        }
+        .logo-img {
+            height: 4rem;
+            width: auto;
+            margin-bottom: 1rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .password-input {
+            position: relative;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6C757D;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        .demo-section {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #F8F9FA;
+            border-radius: 0.5rem;
+            border: 1px solid #E9ECEF;
+        }
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-container">
+            <!-- Brand Section -->
+            <div class="text-center mb-4">
+                <img th:src="@{/images/logov1-removebg-preview.png}" alt="DriveSmart Logo" class="logo-img">
+                <h1 style="font-size: 1.75rem; font-weight: 700; color: #5D707F; margin-bottom: 0.5rem;">
+                    Welcome Back
+                </h1>
+                <p style="color: #6C757D;">Access your fleet management app</p>
+            </div>
+
+            <!-- Alert Messages -->
+            <div th:if="${param.error}" class="mb-3" style="background: rgba(255, 107, 107, 0.1); border: 1px solid #FF6B6B; color: #FF6B6B; padding: 1rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>⚠️</span>
+                <span th:text="${session['SPRING_SECURITY_LAST_EXCEPTION']?.message ?: 'Invalid email or password'}">
+                    Invalid credentials. Please try again.
+                </span>
+            </div>
+
+            <div th:if="${param.logout}" class="mb-3" style="background: rgba(102, 206, 214, 0.1); border: 1px solid #66CED6; color: #66CED6; padding: 1rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>✅</span>
+                <span>You have been logged out successfully.</span>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" th:action="@{/process-login}" method="post" novalidate>
+                <!-- Email Field -->
+                <div class="mb-3">
+                    <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5D707F;">Email Address</label>
+                    <input type="email" id="email" name="username" placeholder="name@example.com" 
+                           autocomplete="username" required autofocus
+                           style="width: 100%; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem; font-size: 1rem;">
+                </div>
+
+                <!-- Password Field -->
+                <div class="mb-3">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <label for="password" style="font-weight: 500; color: #5D707F;">Password</label>
+                        <a href="/auth/forgot-password" style="color: #66CED6; text-decoration: none; font-size: 0.875rem;">Forgot password?</a>
+                    </div>
+                    <div class="password-input">
+                        <input type="password" id="password" name="password" placeholder="••••••••" 
+                               autocomplete="current-password" required
+                               style="width: 100%; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem; font-size: 1rem;">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility()">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember Me Checkbox -->
+                <div class="mb-4" style="display: flex; align-items: center;">
+                    <input type="checkbox" id="rememberMe" name="remember-me" style="width: 1.25rem; height: 1.25rem; margin-right: 0.5rem;">
+                    <label for="rememberMe" style="font-size: 0.875rem; color: #5D707F;">Keep me signed in</label>
+                </div>
+
+                <!-- Login Button -->
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Sign In to Dashboard
+                </button>
+            </form>
+
+            <!-- Demo Credentials Section -->
+            <div class="demo-section">
+                <p style="font-size: 0.875rem; font-weight: 600; color: #5D707F; margin-bottom: 0.75rem; text-align: center;">
+                    Demo Access (Development)
+                </p>
+                <div style="display: grid; gap: 0.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; padding: 0.5rem; background: white; border-radius: 0.25rem; border: 1px solid #E9ECEF;">
+                        <span style="font-weight: 600; color: #5D707F;">Admin</span>
+                        <span style="color: #FF6B6B; font-weight: 500;">admin@drivesmart.com / admin123</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; padding: 0.5rem; background: white; border-radius: 0.25rem; border: 1px solid #E9ECEF;">
+                        <span style="font-weight: 600; color: #5D707F;">Worker</span>
+                        <span style="color: #FF6B6B; font-weight: 500;">worker@drivesmart.com / worker123</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; padding: 0.5rem; background: white; border-radius: 0.25rem; border: 1px solid #E9ECEF;">
+                        <span style="font-weight: 600; color: #5D707F;">Customer</span>
+                        <span style="color: #FF6B6B; font-weight: 500;">user@drivesmart.com / user123</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Links -->
+            <div class="text-center mt-4" style="padding-top: 1.5rem; border-top: 1px solid #E9ECEF;">
+                <p style="color: #6C757D; font-size: 0.875rem; margin-bottom: 0.5rem;">
+                    Need help accessing your account? Contact support.
+                </p>
+                <p style="color: #6C757D; font-size: 0.875rem;">
+                    Don't have an account?
+                    <a th:href="@{/register}" style="color: #66CED6; text-decoration: none; font-weight: 600;">
+                        Create one
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password visibility toggle
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            passwordInput.type = (passwordInput.type === 'password') ? 'text' : 'password';
+        }
+
+        // Form validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('loginForm');
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            form.addEventListener('submit', function(e) {
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value.trim();
+
+                if (!email || !password) {
+                    e.preventDefault();
+                    alert('Please enter both email and password');
+                    return;
+                }
+
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    e.preventDefault();
+                    alert('Please enter a valid email address');
+                    return;
+                }
+
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Signing in...';
+            });
+
+            // Focus email field on load
+            document.getElementById('email').focus();
+
+            // Demo credentials keyboard shortcuts (development only)
+            document.addEventListener('keydown', function(e) {
+                if (e.altKey && e.key === '1') {
+                    document.getElementById('email').value = 'admin@drivesmart.com';
+                    document.getElementById('password').value = 'admin123';
+                    document.getElementById('email').focus();
+                    e.preventDefault();
+                } else if (e.altKey && e.key === '2') {
+                    document.getElementById('email').value = 'worker@drivesmart.com';
+                    document.getElementById('password').value = 'worker123';
+                    document.getElementById('email').focus();
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

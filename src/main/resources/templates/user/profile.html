@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::scripts}, 'profile')}">
+<head>
+    <title>My Profile - DriveSmart</title>
+</head>
+<body>
+    <main th:fragment="main-content">
+        <div class="container">
+            <!-- Header -->
+            <div class="mb-4">
+                <h1 style="font-size: 1.75rem; font-weight: bold; color: #5D707F;">My Profile</h1>
+                <p style="color: #6C757D;">Manage your account information and preferences</p>
+            </div>
+
+            <!-- Profile Header -->
+            <div class="card mb-4" style="background: linear-gradient(135deg, #A7A5C6, #8797B2); color: white; border: none;">
+                <div class="text-center">
+                    <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1rem;">
+                        👤
+                    </div>
+                    <h2 style="font-size: 1.5rem; font-weight: 600;" th:text="${user.fullName}">John Doe</h2>
+                    <p style="opacity: 0.9;" th:text="${user.email}">john@example.com</p>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="grid-4 mb-4">
+                <div class="card text-center">
+                    <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">📅</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;">12</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">Bookings</div>
+                </div>
+                <div class="card text-center">
+                    <div style="margin-bottom: 0.5rem;"><img src="/images/logov1-removebg-preview.png" alt="Cars" style="height:32px"></div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;">8</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">Cars Rented</div>
+                </div>
+                <div class="card text-center">
+                    <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">⭐</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;">4.8</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">Rating</div>
+                </div>
+                <div class="card text-center">
+                    <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">👑</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;">
+                        <span sec:authorize="hasRole('ADMIN')">Admin</span>
+                        <span sec:authorize="hasRole('WORKER')">Staff</span>
+                        <span sec:authorize="hasRole('CUSTOMER')">Customer</span>
+                    </div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">Role</div>
+                </div>
+            </div>
+
+            <!-- Menu Sections -->
+            <div class="card mb-4">
+                <a th:href="@{/user/edit-profile}" class="btn" style="display: flex; align-items: center; padding: 1rem; text-decoration: none; color: #5D707F; border-bottom: 1px solid #E9ECEF;">
+                    <div style="font-size: 1.25rem; margin-right: 1rem;">👤</div>
+                    <div style="flex: 1;">Edit Profile</div>
+                    <div style="color: #6C757D;">›</div>
+                </a>
+                <a th:href="@{/bookings}" class="btn" style="display: flex; align-items: center; padding: 1rem; text-decoration: none; color: #5D707F; border-bottom: 1px solid #E9ECEF;">
+                    <div style="font-size: 1.25rem; margin-right: 1rem;">📅</div>
+                    <div style="flex: 1;">My Bookings</div>
+                    <div style="color: #6C757D;">›</div>
+                </a>
+                <a th:href="@{/cars}" class="btn" style="display: flex; align-items: center; padding: 1rem; text-decoration: none; color: #5D707F; border-bottom: 1px solid #E9ECEF;">
+                    <div style="margin-right: 1rem; height: 20px; display:flex; align-items:center;"><img src="/images/logov1-removebg-preview.png" alt="Cars" style="height:20px"></div>
+                    <div style="flex: 1;">My Cars</div>
+                    <div style="color: #6C757D;">›</div>
+                </a>
+            </div>
+
+            <div class="card mb-4">
+                <a th:href="@{/user/change-password}" class="btn" style="display: flex; align-items: center; padding: 1rem; text-decoration: none; color: #5D707F; border-bottom: 1px solid #E9ECEF;">
+                    <div style="font-size: 1.25rem; margin-right: 1rem;">🔒</div>
+                    <div style="flex: 1;">Change Password</div>
+                    <div style="color: #6C757D;">›</div>
+                </a>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/settings}" class="btn" style="display: flex; align-items: center; padding: 1rem; text-decoration: none; color: #5D707F; border-bottom: 1px solid #E9ECEF;">
+                    <div style="font-size: 1.25rem; margin-right: 1rem;">⚙️</div>
+                    <div style="flex: 1;">Settings</div>
+                    <div style="color: #6C757D;">›</div>
+                </a>
+                <a th:href="@{/bookings}" class="btn" style="display: flex; align-items: center; padding: 1rem; text-decoration: none; color: #5D707F;">
+                    <div style="font-size: 1.25rem; margin-right: 1rem;">❓</div>
+                    <div style="flex: 1;">Help & Support</div>
+                    <div style="color: #6C757D;">›</div>
+                </a>
+            </div>
+
+            <!-- Logout Button -->
+            <div class="text-center">
+                <a th:href="@{/logout}" class="btn btn-outline" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 1rem; text-decoration: none; color: #FF6B6B; border-color: #FF6B6B;">
+                    <div style="font-size: 1.25rem;">🚪</div>
+                    <div>Logout</div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Profile page loaded');
+            });
+        </script>
+    </th:block>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!-- templates/components/navigation.html -->
+<nav class="main-navigation">
+    <div class="nav-container">
+        <ul class="nav-menu">
+            <li><a href="/" class="nav-item"><i class="nav-icon">🏠</i> Home</a></li>
+            
+            <li class="nav-dropdown">
+                <a href="#" class="nav-item"><img src="/images/logov1-removebg-preview.png" alt="Cars" class="nav-icon-img"> Cars <i class="dropdown-arrow">▼</i></a>
+                <div class="dropdown-menu">
+                    <a href="/cars"><i class="nav-icon">📋</i> All Cars</a>
+                    <a href="/cars/search"><i class="nav-icon">🔍</i> Search Cars</a>
+                    <a href="/cars"><i class="nav-icon">ℹ️</i> View Details</a>
+                    <a href="/cars/add" class="admin-only"><i class="nav-icon">➕</i> Add Car (Admin)</a>
+                </div>
+            </li>
+            
+            <li class="nav-dropdown">
+                <a href="#" class="nav-item"><i class="nav-icon">📅</i> Bookings <i class="dropdown-arrow">▼</i></a>
+                <div class="dropdown-menu">
+                    <a href="/bookings" ><i class="nav-icon">📋</i> My Bookings</a>
+                    <a href="/bookings/admin-new" class="admin-only"><i class="nav-icon">⚙️</i> Admin Bookings</a>
+                </div>
+            </li>
+            
+            <li><a href="/customers" class="nav-item"><i class="nav-icon">👥</i> Customers</a></li>
+            
+            <li class="nav-dropdown admin-section">
+                <a href="#" class="nav-item"><i class="nav-icon">⚙️</i> Admin <i class="dropdown-arrow">▼</i></a>
+                <div class="dropdown-menu">
+                    <a href="/admin"><i class="nav-icon">📊</i> Dashboard</a>
+                    <a href="/admin/users"><i class="nav-icon">👥</i> Users</a>
+                    <a href="/admin/reports"><i class="nav-icon">📈</i> Reports</a>
+                    <a href="/admin/settings"><i class="nav-icon">⚙️</i> Settings</a>
+                </div>
+            </li>
+        </ul>
+        
+        <div class="nav-extra">
+            <a href="/login" class="nav-extra-link login-link"><i>🔑</i> Login</a>
+            <a href="/register" class="nav-extra-link register-link"><i>📝</i> Register</a>
+        </div>
+    </div>
+</nav>
+
+<style>
+    .main-navigation {
+        background-color: #34495e;
+        border-bottom: 3px solid #3498db;
+    }
+    
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+    }
+    
+    .nav-menu {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: white;
+        text-decoration: none;
+        padding: 15px 20px;
+        transition: background-color 0.3s;
+    }
+    
+    .nav-item:hover {
+        background-color: #2c3e50;
+    }
+    
+    .nav-icon {
+        font-size: 18px;
+    }
+    .nav-icon-img { height: 18px; display:inline-block; }
+    
+    .nav-dropdown {
+        position: relative;
+    }
+    
+    .dropdown-arrow {
+        font-size: 12px;
+        margin-left: 5px;
+    }
+    
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;
+        min-width: 200px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-radius: 0 0 4px 4px;
+        overflow: hidden;
+        z-index: 1000;
+    }
+    
+    .nav-dropdown:hover .dropdown-menu {
+        display: block;
+    }
+    
+    .dropdown-menu a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        color: #333;
+        text-decoration: none;
+        border-bottom: 1px solid #eee;
+        transition: background 0.3s;
+    }
+    
+    .dropdown-menu a:hover {
+        background: #f5f5f5;
+        color: #3498db;
+    }
+    
+    .admin-only {
+        background: #f8f9fa;
+        color: #e74c3c !important;
+    }
+    
+    .admin-section .dropdown-menu {
+        background: #f8f9fa;
+    }
+    
+    .nav-extra {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .nav-extra-link {
+        padding: 8px 15px;
+        border-radius: 4px;
+        text-decoration: none;
+        color: white;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+    
+    .login-link {
+        background: rgba(52, 152, 219, 0.2);
+    }
+    
+    .register-link {
+        background: #27ae60;
+    }
+    
+    .login-link:hover {
+        background: rgba(52, 152, 219, 0.4);
+    }
+    
+    .register-link:hover {
+        background: #219653;
+    }
+</style>

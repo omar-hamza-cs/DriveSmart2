@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::script}, 'admin-dashboard')}">
+<head>
+    <title>Admin Dashboard - DriveSmart</title>
+</head>
+<body>
+    <main th:fragment="main-content">
+        <div class="container">
+            <!-- Header -->
+            <div class="card mb-4" style="background: linear-gradient(135deg, #A7A5C6, #8797B2); color: white; border: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1 style="font-size: 1.5rem; font-weight: bold;">Admin Dashboard</h1>
+                        <p style="opacity: 0.9;">Welcome back, Admin</p>
+                    </div>
+                    <button class="btn btn-primary" style="background: white; color: #5D707F;">
+                        📊 Export Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid-4 mb-4">
+                <div class="card text-center">
+                    <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">👥</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;">1,248</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">Total Users</div>
+                    <div style="color: #66CED6; font-size: 0.75rem; margin-top: 0.25rem;">↑ 12%</div>
+                </div>
+                <div class="card text-center">
+                    <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">📅</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;">84</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">Active Bookings</div>
+                    <div style="color: #66CED6; font-size: 0.75rem; margin-top: 0.25rem;">↑ 8%</div>
+                </div>
+                <div class="card text-center">
+                    <div style="margin-bottom: 0.5rem;"><img src="/images/logov1-removebg-preview.png" alt="Cars" style="height:32px"></div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;">42</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">Available Cars</div>
+                    <div style="color: #6C757D; font-size: 0.75rem; margin-top: 0.25rem;">No change</div>
+                </div>
+                <div class="card text-center">
+                    <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">💰</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;">$24,890</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">Revenue</div>
+                    <div style="color: #66CED6; font-size: 0.75rem; margin-top: 0.25rem;">↑ 15%</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid-4 mb-4">
+                <a th:href="@{/admin/users}" class="card" style="text-decoration: none; color: inherit;">
+                    <div style="font-size: 1.5rem; color: #66CED6; margin-bottom: 1rem;">👥</div>
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: #5D707F; margin-bottom: 0.5rem;">Manage Users</h3>
+                    <p style="color: #6C757D; font-size: 0.875rem;">Add, edit, or remove users</p>
+                </a>
+                <a th:href="@{/cars}" class="card" style="text-decoration: none; color: inherit;">
+                    <div style="margin-bottom: 1rem;"><img src="/images/logov1-removebg-preview.png" alt="Cars" style="height:24px"></div>
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: #5D707F; margin-bottom: 0.5rem;">Vehicle Management</h3>
+                    <p style="color: #6C757D; font-size: 0.875rem;">Manage fleet vehicles</p>
+                </a>
+                <a th:href="@{/admin/reports}" class="card" style="text-decoration: none; color: inherit;">
+                    <div style="font-size: 1.5rem; color: #66CED6; margin-bottom: 1rem;">📊</div>
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: #5D707F; margin-bottom: 0.5rem;">Reports & Analytics</h3>
+                    <p style="color: #6C757D; font-size: 0.875rem;">View detailed reports</p>
+                </a>
+                <a th:href="@{/admin/settings}" class="card" style="text-decoration: none; color: inherit;">
+                    <div style="font-size: 1.5rem; color: #66CED6; margin-bottom: 1rem;">⚙️</div>
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: #5D707F; margin-bottom: 0.5rem;">System Settings</h3>
+                    <p style="color: #6C757D; font-size: 0.875rem;">Configure system preferences</p>
+                </a>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card mb-4">
+                <h2 style="font-size: 1.25rem; font-weight: 600; color: #5D707F; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Recent Activity</span>
+                    <a th:href="@{/admin/audit-logs}" class="btn btn-outline" style="font-size: 0.875rem;">View All</a>
+                </h2>
+                <div>
+                    <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid #E9ECEF;">
+                        <div style="width: 2.5rem; height: 2.5rem; background: #F8F9FA; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #66CED6;">
+                            👤
+                        </div>
+                        <div>
+                            <p style="color: #5D707F; font-weight: 500; margin-bottom: 0.25rem;">New user registered: John Doe</p>
+                            <span style="color: #6C757D; font-size: 0.75rem;">10 minutes ago</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid #E9ECEF;">
+                        <div style="width: 2.5rem; height: 2.5rem; background: #F8F9FA; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #66CED6;">
+                            <img src="/images/logov1-removebg-preview.png" alt="Car" style="height:20px">
+                        </div>
+                        <div>
+                            <p style="color: #5D707F; font-weight: 500; margin-bottom: 0.25rem;">Vehicle #123 completed trip</p>
+                            <span style="color: #6C757D; font-size: 0.75rem;">1 hour ago</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0;">
+                        <div style="width: 2.5rem; height: 2.5rem; background: #F8F9FA; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #66CED6;">
+                            💰
+                        </div>
+                        <div>
+                            <p style="color: #5D707F; font-weight: 500; margin-bottom: 0.25rem;">Monthly report generated</p>
+                            <span style="color: #6C757D; font-size: 0.75rem;">2 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="card">
+                <h2 style="font-size: 1.25rem; font-weight: 600; color: #5D707F; margin-bottom: 1rem;">System Status</h2>
+                <div class="grid-4">
+                    <div class="card text-center">
+                        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
+                            <div style="width: 12px; height: 12px; background: #66CED6; border-radius: 50%; margin-right: 0.5rem; box-shadow: 0 0 0 3px rgba(102, 206, 214, 0.2);"></div>
+                            <div style="font-weight: 600; color: #5D707F;">API Server</div>
+                        </div>
+                        <p style="color: #6C757D; font-size: 0.875rem;">All systems operational</p>
+                    </div>
+                    <div class="card text-center">
+                        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
+                            <div style="width: 12px; height: 12px; background: #66CED6; border-radius: 50%; margin-right: 0.5rem; box-shadow: 0 0 0 3px rgba(102, 206, 214, 0.2);"></div>
+                            <div style="font-weight: 600; color: #5D707F;">Database</div>
+                        </div>
+                        <p style="color: #6C757D; font-size: 0.875rem;">Connection stable</p>
+                    </div>
+                    <div class="card text-center">
+                        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
+                            <div style="width: 12px; height: 12px; background: #66CED6; border-radius: 50%; margin-right: 0.5rem; box-shadow: 0 0 0 3px rgba(102, 206, 214, 0.2);"></div>
+                            <div style="font-weight: 600; color: #5D707F;">Payment System</div>
+                        </div>
+                        <p style="color: #6C757D; font-size: 0.875rem;">Running normally</p>
+                    </div>
+                    <div class="card text-center">
+                        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
+                            <div style="width: 12px; height: 12px; background: #66CED6; border-radius: 50%; margin-right: 0.5rem; box-shadow: 0 0 0 3px rgba(102, 206, 214, 0.2);"></div>
+                            <div style="font-weight: 600; color: #5D707F;">Uptime</div>
+                        </div>
+                        <p style="color: #6C757D; font-size: 0.875rem;">99.8%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Admin dashboard loaded');
+                
+                // Auto-refresh stats every 5 minutes
+                setInterval(function() {
+                    console.log('Refreshing admin stats...');
+                    // In production, this would fetch fresh data from server
+                }, 300000);
+                
+                // Add hover effects
+                document.querySelectorAll('.card[href]').forEach(card => {
+                    card.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-4px)';
+                    });
+                    card.addEventListener('mouseleave', function() {
+                        this.style.transform = '';
+                    });
+                });
+                
+                // Export button functionality
+                document.querySelector('button.btn-primary').addEventListener('click', function() {
+                    console.log('Exporting admin report...');
+                    alert('Report exported successfully!');
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::scripts}, 'customers')}">
+<head>
+    <title>Customers - DriveSmart</title>
+</head>
+<body>
+    <main th:fragment="main-content">
+        <div class="container">
+            <!-- Header -->
+            <div class="mb-4">
+                <h1 style="font-size: 1.75rem; font-weight: bold; color: #5D707F;">Customers</h1>
+                <p style="color: #6C757D;">Manage your client database</p>
+            </div>
+
+            <!-- Customer Stats -->
+            <div class="grid-4 mb-4">
+                <div class="card text-center">
+                    <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">👥</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;" th:text="${totalCustomers ?: '48'}">48</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">Total Customers</div>
+                </div>
+                <div class="card text-center">
+                    <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">✅</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;" th:text="${activeCustomers ?: '42'}">42</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">Active</div>
+                </div>
+                <div class="card text-center">
+                    <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">⭐</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;" th:text="${vipCustomers ?: '8'}">8</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">VIP</div>
+                </div>
+                <div class="card text-center">
+                    <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">🆕</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;" th:text="${newThisMonth ?: '12'}">12</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">New This Month</div>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="card mb-4">
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="customerSearch" placeholder="Search customers by name, email, or phone..." 
+                           style="flex: 1; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem;">
+                    <button onclick="clearSearch()" class="btn btn-outline">Clear</button>
+                </div>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="filterCustomers('all')">All Customers</button>
+                <button class="btn btn-outline" onclick="filterCustomers('vip')">VIP</button>
+                <button class="btn btn-outline" onclick="filterCustomers('active')">Active</button>
+                <button class="btn btn-outline" onclick="filterCustomers('inactive')">Inactive</button>
+                <button class="btn btn-outline" onclick="filterCustomers('overdue')">Payment Due</button>
+            </div>
+
+            <!-- Sort Options -->
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                <button class="btn btn-outline active" onclick="sortCustomers('recent')">Most Recent</button>
+                <button class="btn btn-outline" onclick="sortCustomers('name')">A to Z</button>
+                <button class="btn btn-outline" onclick="sortCustomers('spent')">Top Spenders</button>
+                <button class="btn btn-outline" onclick="sortCustomers('bookings')">Most Bookings</button>
+            </div>
+
+            <!-- Customers List -->
+            <div id="customersList">
+                <div class="card mb-3" th:each="cust : ${customers}" th:attr="data-status=${cust.isActive} ? 'active' : 'inactive', data-name=${cust.fullName}">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 3rem; height: 3rem; background: linear-gradient(135deg, #A7A5C6, #8797B2); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 1.125rem;" th:text="${cust.fullName.substring(0,1)} + ${cust.fullName.contains(' ') ? cust.fullName.substring(cust.fullName.indexOf(' ')+1, cust.fullName.indexOf(' ')+2) : ''}">JD</div>
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                    <div style="font-weight: 600; color: #5D707F; font-size: 1.125rem;" th:text="${cust.fullName}">John Doe</div>
+                                </div>
+                                <div style="color: #6C757D; font-size: 0.875rem;" th:text="${cust.email}">email</div>
+                                <div style="color: #6C757D; font-size: 0.875rem;" th:text="${cust.phoneNumber}">phone</div>
+                            </div>
+                        </div>
+                        <span th:if="${cust.isActive}" style="background: #DCFCE7; color: #166534; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600;">Active</span>
+                        <span th:if="${!cust.isActive}" style="background: #FEE2E2; color: #DC2626; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600;">Inactive</span>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div style="display: flex; gap: 0.5rem;">
+                        <a class="btn btn-outline" style="flex: 1;" th:href="@{'/bookings/admin-new?clientId=' + ${cust.id}}">New Booking</a>
+                        <form th:action="@{'/admin/users/' + ${cust.id} + '/toggle-status'}" method="post" style="flex:1;">
+                            <button class="btn btn-primary" th:text="${cust.isActive} ? 'Deactivate' : 'Activate'" type="submit" style="width:100%"></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Customer Button -->
+            <div class="text-center mt-4">
+                <a href="/customers/add" class="btn btn-primary">➕ Add New Customer</a>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Customers page loaded');
+                
+                // Search functionality
+                const searchInput = document.getElementById('customerSearch');
+                searchInput.addEventListener('keyup', function() {
+                    searchCustomers(this.value);
+                });
+                
+                // Initialize filter buttons
+                document.querySelectorAll('.btn-outline[onclick*="filterCustomers"]').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        // Remove active from all filter buttons
+                        document.querySelectorAll('.btn-outline[onclick*="filterCustomers"], .btn-primary[onclick*="filterCustomers"]').forEach(b => {
+                            b.classList.remove('btn-primary');
+                            b.classList.add('btn-outline');
+                        });
+                        
+                        // Make this button primary
+                        this.classList.remove('btn-outline');
+                        this.classList.add('btn-primary');
+                    });
+                });
+                
+                // Initialize sort buttons
+                document.querySelectorAll('.btn-outline[onclick*="sortCustomers"]').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        // Remove active from all sort buttons
+                        document.querySelectorAll('.btn-outline[onclick*="sortCustomers"]').forEach(b => {
+                            b.classList.remove('active');
+                        });
+                        
+                        // Add active to clicked button
+                        this.classList.add('active');
+                    });
+                });
+            });
+            
+            function searchCustomers(query) {
+                const customers = document.querySelectorAll('.card[data-name]');
+                query = query.toLowerCase();
+                
+                customers.forEach(customer => {
+                    const name = customer.getAttribute('data-name').toLowerCase();
+                    const email = customer.querySelector('div:nth-child(2) > div:nth-child(2)').textContent.toLowerCase();
+                    
+                    if (name.includes(query) || email.includes(query) || query === '') {
+                        customer.style.display = 'block';
+                    } else {
+                        customer.style.display = 'none';
+                    }
+                });
+            }
+            
+            function clearSearch() {
+                document.getElementById('customerSearch').value = '';
+                searchCustomers('');
+            }
+            
+            function filterCustomers(filter) {
+                const customers = document.querySelectorAll('.card[data-status]');
+                
+                customers.forEach(customer => {
+                    const status = customer.getAttribute('data-status');
+                    const type = customer.getAttribute('data-type');
+                    
+                    switch(filter) {
+                        case 'all':
+                            customer.style.display = 'block';
+                            break;
+                        case 'vip':
+                            customer.style.display = type === 'vip' ? 'block' : 'none';
+                            break;
+                        case 'active':
+                            customer.style.display = status === 'active' ? 'block' : 'none';
+                            break;
+                        case 'inactive':
+                            customer.style.display = status === 'inactive' ? 'block' : 'none';
+                            break;
+                        case 'overdue':
+                            // Check for payment due badge
+                            const hasPaymentDue = customer.querySelector('button[style*="DC2626"]');
+                            customer.style.display = hasPaymentDue ? 'block' : 'none';
+                            break;
+                        default:
+                            customer.style.display = 'block';
+                    }
+                });
+            }
+            
+            function sortCustomers(sortBy) {
+                const container = document.getElementById('customersList');
+                const customers = Array.from(document.querySelectorAll('.card[data-name]:not([style*="display: none"])'));
+                
+                customers.sort((a, b) => {
+                    switch(sortBy) {
+                        case 'name':
+                            return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
+                        case 'recent':
+                            // Default order
+                            return 0;
+                        case 'spent':
+                            const aSpent = parseInt(a.querySelector('div[style*="space-around"] > div:nth-child(2) > div:first-child').textContent.replace('$', '').replace(',', '')) || 0;
+                            const bSpent = parseInt(b.querySelector('div[style*="space-around"] > div:nth-child(2) > div:first-child').textContent.replace('$', '').replace(',', '')) || 0;
+                            return bSpent - aSpent;
+                        case 'bookings':
+                            const aBookings = parseInt(a.querySelector('div[style*="space-around"] > div:first-child > div:first-child').textContent) || 0;
+                            const bBookings = parseInt(b.querySelector('div[style*="space-around"] > div:first-child > div:first-child').textContent) || 0;
+                            return bBookings - aBookings;
+                        default:
+                            return 0;
+                    }
+                });
+                
+                // Reappend sorted customers
+                customers.forEach(customer => {
+                    container.appendChild(customer);
+                });
+            }
+            
+            function viewCustomer(id) {
+                window.location.href = `/customers/${id}`;
+            }
+            
+            function createBookingForCustomer(id) {
+                window.location.href = `/bookings/new?customerId=${id}`;
+            }
+            
+            function reactivateCustomer(id) {
+                if (confirm('Reactivate this customer?')) {
+                    const customer = document.querySelector(`.card[data-name="${id === 1 ? 'John Doe' : id === 2 ? 'Alice Smith' : 'Robert Johnson'}"]`);
+                    const statusBadge = customer.querySelector('span[style*="background"]');
+                    
+                    statusBadge.style.background = '#DCFCE7';
+                    statusBadge.style.color = '#166534';
+                    statusBadge.textContent = 'Active';
+                    
+                    alert('Customer reactivated!');
+                }
+            }
+            
+            function sendReminder(id) {
+                alert('Payment reminder sent to customer');
+            }
+        </script>
+    </th:block>
+</body>
+</html>

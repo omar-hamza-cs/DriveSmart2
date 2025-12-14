@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::scripts}, 'bookings')}">
+<head>
+    <title>Bookings - DriveSmart</title>
+</head>
+<body>
+    <main th:fragment="main-content">
+        <!-- Header -->
+        <div class="container mb-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 style="font-size: 1.75rem; font-weight: bold; color: #5D707F; margin-bottom: 0.5rem;">Bookings</h1>
+                    <p style="color: #6C757D;">Manage reservations and rentals</p>
+                </div>
+                <a th:href="@{/bookings/admin-new}" class="btn btn-primary">New Booking</a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="container mb-4">
+            <div class="grid-4">
+                <div class="card text-center">
+                    <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">📅</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F; margin-bottom: 0.25rem;" th:text="${totalBookings ?: '24'}">24</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">Total Bookings</div>
+                </div>
+                <div class="card text-center">
+                    <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">✅</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F; margin-bottom: 0.25rem;" th:text="${activeBookings ?: '8'}">8</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">Active Now</div>
+                </div>
+                <div class="card text-center">
+                    <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">💰</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F; margin-bottom: 0.25rem;" th:text="${revenueToday ?: '$1,245'}">$1,245</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">Today's Revenue</div>
+                </div>
+                <div class="card text-center">
+                    <div style="margin-bottom: 0.5rem;"><img src="/images/logov1-removebg-preview.png" alt="Cars" style="height:32px"></div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F; margin-bottom: 0.25rem;">6</div>
+                    <div style="color: #6C757D; font-size: 0.875rem;">Pickups Today</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Filters -->
+        <div class="container mb-4">
+            <div class="card">
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="filterBookings('all')">All</button>
+                    <button class="btn btn-outline" onclick="filterBookings('pending')">Pending</button>
+                    <button class="btn btn-outline" onclick="filterBookings('confirmed')">Confirmed</button>
+                    <button class="btn btn-outline" onclick="filterBookings('active')">Active</button>
+                    <button class="btn btn-outline" onclick="filterBookings('completed')">Completed</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings List -->
+        <div class="container">
+            <div class="card mb-3" th:each="b : ${bookings}">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; color: #5D707F; margin-bottom: 0.25rem;" th:text="${b.car.brand} + ' ' + ${b.car.model} + ' - ' + ${b.user.fullName}">Booking Title</h3>
+                        <div style="color: #6C757D; font-size: 0.875rem;" th:text="'Booking #' + ${b.id}">Booking #</div>
+                    </div>
+                    <span style="background: #66CED6; color: white; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 500;" th:text="${b.status}">Status</span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; margin-bottom: 1rem; text-align: center;">
+                    <div>
+                        <div style="font-size: 0.875rem; color: #6C757D; margin-bottom: 0.25rem;">Pickup</div>
+                        <div style="font-weight: 600; color: #5D707F;" th:text="${#temporals.format(b.startDate, 'MMM dd, yyyy')}">Start</div>
+                    </div>
+                    <div style="color: #66CED6; font-size: 1.25rem; display: flex; align-items: center;">→</div>
+                    <div>
+                        <div style="font-size: 0.875rem; color: #6C757D; margin-bottom: 0.25rem;">Return</div>
+                        <div style="font-weight: 600; color: #5D707F;" th:text="${#temporals.format(b.endDate, 'MMM dd, yyyy')}">End</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem;">
+                    <a th:href="@{'/bookings/' + ${b.id}}" class="btn btn-outline" style="flex: 1;">View Details</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:fragment="scripts">
+        <script>
+            function filterBookings(status) {
+                alert(`Filtering by: ${status}`);
+                // In real app, this would filter the bookings
+            }
+            
+            function checkInBooking(id) {
+                if (confirm('Check in this booking?')) {
+                    alert(`Checking in booking ${id}`);
+                    // POST to /bookings/{id}/status with status=ACTIVE
+                }
+            }
+            
+            function checkOutBooking(id) {
+                if (confirm('Check out this booking?')) {
+                    alert(`Checking out booking ${id}`);
+                    // POST to /bookings/{id}/status with status=COMPLETED
+                }
+            }
+            
+            function confirmBooking(id) {
+                if (confirm('Confirm this booking?')) {
+                    alert(`Confirming booking ${id}`);
+                    // POST to /bookings/{id}/status with status=CONFIRMED
+                }
+            }
+            
+            function cancelBooking(id) {
+                if (confirm('Cancel this booking?')) {
+                    alert(`Cancelling booking ${id}`);
+                    // POST to /bookings/{id}/cancel
+                }
+            }
+        </script>
+    </th:block>
+</body>
+</html>

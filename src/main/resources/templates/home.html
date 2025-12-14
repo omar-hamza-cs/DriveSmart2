@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::scripts}, 'home')}">
+<head>
+    <title>DriveSmart - Modern Car Rental Platform</title>
+    <th:block th:fragment="head">
+        <!-- No styles here - all in main.css -->
+    </th:block>
+</head>
+<body>
+    <main th:fragment="main-content" class="container py-4 py-lg-5">
+        <!-- HERO SECTION -->
+        <section class="card mb-4" style="background: linear-gradient(135deg, rgba(167,165,198,0.15), rgba(102,206,214,0.15)); border: none;">
+            <div class="container">
+                <h1 class="mb-2" style="font-size: 2.5rem; font-weight: bold;">Manage Your Fleet Smart</h1>
+                <p class="text-secondary mb-3" style="font-size: 1.125rem; max-width: 600px;">
+                    Professional, mobile-first car rental management. Quick access to bookings, fleet, customers and insights.
+                </p>
+                <div class="flex gap-3">
+                    <a th:href="@{/cars/search}" class="btn btn-secondary">Find a Car</a>
+                    <a href="#quick-access" class="btn btn-primary">Quick Access</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATS SECTION -->
+        <section class="container mb-5">
+            <div class="grid-4">
+                <div class="card text-center">
+                    <div style="margin-bottom: 0.5rem;"><img src="/images/logov1-removebg-preview.png" alt="DriveSmart" style="height:40px"></div>
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--dark); margin-bottom: 0.5rem;">200+</div>
+                    <div class="text-secondary" style="font-size: 0.9rem;">Vehicles Available</div>
+                </div>
+                <div class="card text-center">
+                    <div style="font-size: 2.5rem; color: var(--accent); margin-bottom: 0.5rem;">👥</div>
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--dark); margin-bottom: 0.5rem;">5,000+</div>
+                    <div class="text-secondary" style="font-size: 0.9rem;">Happy Customers</div>
+                </div>
+                <div class="card text-center">
+                    <div style="font-size: 2.5rem; color: var(--accent); margin-bottom: 0.5rem;">📍</div>
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--dark); margin-bottom: 0.5rem;">50+</div>
+                    <div class="text-secondary" style="font-size: 0.9rem;">Locations</div>
+                </div>
+                <div class="card text-center">
+                    <div style="font-size: 2.5rem; color: var(--accent); margin-bottom: 0.5rem;">⭐</div>
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--dark); margin-bottom: 0.5rem;">4.8</div>
+                    <div class="text-secondary" style="font-size: 0.9rem;">Average Rating</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUICK ACCESS -->
+        <section id="quick-access" class="container mb-5">
+            <h2 class="text-center mb-4" style="font-size: 1.75rem; font-weight: bold; color: var(--dark);">Quick Access</h2>
+            <div class="grid-4">
+                <!-- BOOKINGS CARD -->
+                <a th:href="@{/bookings}" class="card" style="text-decoration: none; color: inherit;">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div style="font-size: 1.5rem; color: var(--accent);">📅</div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600;">My Bookings</h3>
+                    </div>
+                    <p class="text-secondary mb-3">View and manage current and past reservations.</p>
+                    <span class="text-accent">View bookings →</span>
+                </a>
+
+                <!-- VEHICLES CARD -->
+                <a th:href="@{/cars}" class="card" style="text-decoration: none; color: inherit;">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div style="height: 24px;"><img src="/images/logov1-removebg-preview.png" alt="DriveSmart" style="height:24px"></div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600;">Browse Vehicles</h3>
+                    </div>
+                    <p class="text-secondary mb-3">Explore the fleet and manage inventory.</p>
+                    <span class="text-accent">View all →</span>
+                </a>
+
+                <!-- PROFILE CARD -->
+                <a th:href="@{/user/profile}" class="card" style="text-decoration: none; color: inherit;">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div style="font-size: 1.5rem; color: var(--accent);">👤</div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600;">My Profile</h3>
+                    </div>
+                    <p class="text-secondary mb-3">Update personal information and preferences.</p>
+                    <span class="text-accent">Edit profile →</span>
+                </a>
+
+                <!-- ADMIN CARD (conditionally shown) -->
+                <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin}" class="card" style="text-decoration: none; color: inherit;">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div style="font-size: 1.5rem; color: var(--accent);">⚙️</div>
+                        <h3 style="font-size: 1.25rem; font-weight: 600;">Admin Dashboard</h3>
+                    </div>
+                    <p class="text-secondary mb-3">Manage users, vehicles, and system settings.</p>
+                    <span class="text-accent">Go to admin →</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Smooth scroll for anchor links
+                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                    anchor.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const targetId = this.getAttribute('href');
+                        if (targetId === '#') return;
+                        
+                        const targetElement = document.querySelector(targetId);
+                        if (targetElement) {
+                            window.scrollTo({
+                                top: targetElement.offsetTop - 80,
+                                behavior: 'smooth'
+                            });
+                        }
+                    });
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::scripts}, 'car-details')}">
+<head>
+    <title th:text="${car?.brand + ' ' + car?.model + ' - DriveSmart'}">Car Details - DriveSmart</title>
+</head>
+<body>
+    <main th:fragment="main-content">
+        <div class="container">
+            <!-- Back Navigation -->
+            <div class="mb-4">
+                <a th:href="@{/cars}" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                    ← Back to Fleet
+                </a>
+            </div>
+
+            <!-- Car Details Card -->
+            <div class="card mb-4">
+                <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                    <!-- Car Image -->
+                    <div style="flex: 1; min-width: 300px;">
+                        <div style="background: #F8F9FA; height: 300px; border-radius: 0.75rem; margin-bottom: 1rem;">
+                            <img th:if="${car.hasImage()}" th:src="@{${car.imageUrl}}" alt="Car"
+                                 style="width:100%; height:100%; object-fit: cover; border-radius: 0.75rem;" />
+                        </div>
+                    </div>
+                    
+                    <!-- Car Info -->
+                    <div style="flex: 2; min-width: 300px;">
+                        <h1 style="font-size: 2rem; font-weight: bold; color: #5D707F; margin-bottom: 0.5rem;">
+                            <span th:text="${car?.brand}">Audi</span> 
+                            <span th:text="${car?.model}">A6</span> 
+                            <span th:text="${car?.year}">2023</span>
+                        </h1>
+                        
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+                            <span style="background: #66CED6; color: white; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 500;">
+                                <span th:text="${car?.isAvailable} ? 'Available' : 'Unavailable'">Available</span>
+                            </span>
+                            <span style="color: #6C757D; font-size: 0.875rem;">License: <span th:text="${car?.licensePlate}">ABC-123</span></span>
+                        </div>
+
+                        <!-- Pricing -->
+                        <div style="margin-bottom: 2rem;">
+                            <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+                                <div style="font-size: 2rem; font-weight: bold; color: #5D707F;" th:text="'$' + ${car?.pricePerDay}">$129</div>
+                                <div style="color: #6C757D;">per day</div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <a th:href="@{/bookings/new(carId=${car?.id})}" class="btn btn-primary">
+                                Book This Car
+                            </a>
+                            <a href="#" class="btn btn-outline">Add to Favorites</a>
+                            <a sec:authorize="hasRole('ADMIN')" th:href="@{/cars/edit(id=${car?.id})}" class="btn btn-secondary">
+                                Edit Vehicle
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specifications -->
+            <div class="card mb-4">
+                <h2 style="font-size: 1.25rem; font-weight: 600; color: #5D707F; margin-bottom: 1rem;">Specifications</h2>
+                <div class="grid-4">
+                    <div>
+                        <div style="color: #6C757D; font-size: 0.875rem; margin-bottom: 0.25rem;">Type</div>
+                        <div style="font-weight: 500; color: #5D707F;" th:text="'Sedan'"></div>
+                    </div>
+                    <div>
+                        <div style="color: #6C757D; font-size: 0.875rem; margin-bottom: 0.25rem;">Color</div>
+                        <div style="font-weight: 500; color: #5D707F;" th:text="${car?.color}">Black</div>
+                    </div>
+                    <div>
+                        <div style="color: #6C757D; font-size: 0.875rem; margin-bottom: 0.25rem;">Seats</div>
+                        <div style="font-weight: 500; color: #5D707F;">N/A</div>
+                    </div>
+                    <div>
+                        <div style="color: #6C757D; font-size: 0.875rem; margin-bottom: 0.25rem;">Transmission</div>
+                        <div style="font-weight: 500; color: #5D707F;" th:text="'Automatic'"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="card">
+                <h2 style="font-size: 1.25rem; font-weight: 600; color: #5D707F; margin-bottom: 1rem;">Description</h2>
+                <p style="color: #6C757D; line-height: 1.6;">
+                    This premium vehicle offers exceptional comfort, style, and performance. 
+                    Perfect for both business trips and family vacations, featuring advanced 
+                    safety systems and modern amenities for an unforgettable driving experience.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Car details page loaded');
+                
+                // Add favorite functionality
+                const favoriteBtn = document.querySelector('a[href="#"]');
+                if (favoriteBtn && favoriteBtn.textContent.includes('Favorites')) {
+                    favoriteBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const isFavorite = this.classList.contains('active');
+                        
+                        if (isFavorite) {
+                            this.classList.remove('active');
+                            this.style.borderColor = '';
+                            this.style.color = '';
+                            alert('Removed from favorites');
+                        } else {
+                            this.classList.add('active');
+                            this.style.borderColor = '#FF6B6B';
+                            this.style.color = '#FF6B6B';
+                            alert('Added to favorites');
+                        }
+                    });
+                }
+            });
+        </script>
+    </th:block>
+</body>
+</html>

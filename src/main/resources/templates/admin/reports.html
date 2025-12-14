@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::script}, 'reports')}">
+<head>
+    <title>Reports - DriveSmart Admin</title>
+    <th:block th:fragment="head">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css">
+        <!-- NO STYLE TAGS - Using main.css only -->
+    </th:block>
+</head>
+<body>
+    <main th:fragment="main-content">
+        <!-- Main Container -->
+        <div class="container" style="padding: 2rem 1rem;">
+            
+            <!-- Page Header -->
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h1 style="font-size: 1.75rem; color: var(--dark); margin-bottom: 0.5rem;">Reports & Analytics</h1>
+                    <p class="text-secondary" th:text="${reportTitle}">Monthly Report</p>
+                </div>
+                <div class="flex gap-2 items-center">
+                    <a th:href="@{/admin}" class="btn btn-outline" style="text-decoration: none;">← Back to Dashboard</a>
+                    <button class="btn btn-primary">
+                        <span>Export Report</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Date Filter -->
+            <div class="card mb-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <div style="font-weight: 500; color: var(--dark);">Filter by Date:</div>
+                    <input type="date" 
+                           class="btn btn-outline" 
+                           style="border: 1px solid var(--border); padding: 0.5rem 1rem; min-width: 150px;">
+                    <span class="text-secondary">to</span>
+                    <input type="date" 
+                           class="btn btn-outline" 
+                           style="border: 1px solid var(--border); padding: 0.5rem 1rem; min-width: 150px;">
+                    <button class="btn btn-primary">Apply Filter</button>
+                </div>
+            </div>
+
+            <!-- Monthly Overview Card -->
+            <div class="card mb-4">
+                <h2 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.25rem;">Monthly Overview</h2>
+                
+                <!-- Metric Grid -->
+                <div class="grid-4" style="margin: 1.5rem 0;">
+                    <div class="card text-center" style="border: 1px solid var(--border);">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--cta);" th:text="'$' + ${totalRevenue}">$12,540</div>
+                        <div class="text-secondary" style="margin-top: 0.5rem;">Total Revenue</div>
+                    </div>
+                    
+                    <div class="card text-center" style="border: 1px solid var(--border);">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--accent);" th:text="${totalBookings}">89</div>
+                        <div class="text-secondary" style="margin-top: 0.5rem;">Total Bookings</div>
+                    </div>
+                    
+                    <div class="card text-center" style="border: 1px solid var(--border);">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--secondary);">24</div>
+                        <div class="text-secondary" style="margin-top: 0.5rem;">Active Cars</div>
+                    </div>
+                    
+                    <div class="card text-center" style="border: 1px solid var(--border);">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--dark);" th:text="${popularCar}">Audi A3</div>
+                        <div class="text-secondary" style="margin-top: 0.5rem;">Popular Car</div>
+                    </div>
+                </div>
+
+                <!-- Chart Container -->
+                <div style="margin-top: 2rem;">
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Reports Card -->
+            <div class="card">
+                <h2 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.25rem;">Available Reports</h2>
+                
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <!-- Revenue Report -->
+                    <div class="card" style="border: 1px solid var(--border); padding: 1rem;">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                <div style="width: 40px; height: 40px; background: var(--cta); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                                    💰
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--dark);">Revenue Report</div>
+                                    <div class="text-secondary" style="font-size: 0.875rem;">Monthly income and expenses</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline">PDF</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Car Utilization Report -->
+                    <div class="card" style="border: 1px solid var(--border); padding: 1rem;">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                <div style="width: 40px; height: 40px; background: var(--secondary); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                                    <img src="/images/logov1-removebg-preview.png" alt="Car" style="height:20px">
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--dark);">Car Utilization</div>
+                                    <div class="text-secondary" style="font-size: 0.875rem;">Booking rates and performance</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline">PDF</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Customer Analytics Report -->
+                    <div class="card" style="border: 1px solid var(--border); padding: 1rem;">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                <div style="width: 40px; height: 40px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                                    👥
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--dark);">Customer Analytics</div>
+                                    <div class="text-secondary" style="font-size: 0.875rem;">User behavior and preferences</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline">PDF</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    
+    <th:block th:fragment="scripts">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Set default dates
+                const today = new Date();
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                
+                // Set date inputs
+                const dateInputs = document.querySelectorAll('input[type="date"]');
+                if (dateInputs[0]) dateInputs[0].valueAsDate = firstDay;
+                if (dateInputs[1]) dateInputs[1].valueAsDate = lastDay;
+                
+                // Initialize Revenue Chart
+                const revenueChartCtx = document.getElementById('revenueChart');
+                if (revenueChartCtx) {
+                    new Chart(revenueChartCtx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                            datasets: [{
+                                label: 'Revenue ($)',
+                                data: [1200, 1900, 1500, 2000],
+                                borderColor: 'var(--primary)',
+                                backgroundColor: 'rgba(167, 165, 198, 0.1)',
+                                tension: 0.3,
+                                fill: true,
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        color: 'rgba(93, 112, 127, 0.1)'
+                                    },
+                                    ticks: {
+                                        callback: function(value) {
+                                            return '$' + value;
+                                        }
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Handle report generation buttons
+                document.querySelectorAll('.btn-outline').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const card = this.closest('.card');
+                        const reportTitle = card.querySelector('[style*="font-weight: 600"]').textContent;
+                        console.log(`Generating ${reportTitle} in PDF format...`);
+                        // Add actual report generation logic here
+                    });
+                });
+                
+                // Handle date filter button
+                document.querySelector('.btn-primary').addEventListener('click', function() {
+                    const startDate = dateInputs[0].value;
+                    const endDate = dateInputs[1].value;
+                    console.log(`Filtering reports from ${startDate} to ${endDate}`);
+                    // Add actual filter logic here
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en"
+      th:replace="~{layout/layout :: layout('Dashboard', ~{::main}, ~{::script}, 'home')}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - DriveSmart</title>
+</head>
+<body>
+    <main>
+        <!-- Dashboard Header -->
+        <div class="app-page-header">
+            <div class="app-page-header-content">
+                <div class="app-page-header-title">
+                    <h1 class="app-page-header-heading">Dashboard</h1>
+                    <p class="app-page-header-subtitle">Welcome back! Here's your fleet overview</p>
+                </div>
+                <div class="app-page-header-actions">
+                    <button class="app-btn app-btn-outline" onclick="refreshDashboard()">
+                        <svg class="app-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="app-stats-grid">
+            <div class="app-stat-card app-stat-card-primary">
+                <div class="app-stat-card-icon">
+                    <svg class="app-icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13l2-5a2 2 0 011-1h10a2 2 0 012 1l2 5"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 16a2 2 0 104 0 2 2 0 00-4 0zm10 0a2 2 0 104 0 2 2 0 00-4 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13h18v4H3z"/>
+                    </svg>
+                </div>
+                <div class="app-stat-card-content">
+                    <div class="app-stat-card-value" th:text="${stats.totalCars ?: '42'}">42</div>
+                    <div class="app-stat-card-label">Total Vehicles</div>
+                    <div class="app-stat-card-trend app-stat-card-trend-up">
+                        <svg class="app-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                        </svg>
+                        <span>+8%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-stat-card app-stat-card-success">
+                <div class="app-stat-card-icon">
+                    <svg class="app-icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="app-stat-card-content">
+                    <div class="app-stat-card-value" th:text="${stats.availableCars ?: '28'}">28</div>
+                    <div class="app-stat-card-label">Available Cars</div>
+                    <div class="app-stat-card-trend app-stat-card-trend-up">
+                        <svg class="app-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                        </svg>
+                        <span>+12%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-stat-card app-stat-card-warning">
+                <div class="app-stat-card-icon">
+                    <svg class="app-icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div class="app-stat-card-content">
+                    <div class="app-stat-card-value" th:text="${stats.activeBookings ?: '15'}">15</div>
+                    <div class="app-stat-card-label">Active Bookings</div>
+                    <div class="app-stat-card-trend app-stat-card-trend-up">
+                        <svg class="app-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                        </svg>
+                        <span>+5%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-stat-card app-stat-card-info">
+                <div class="app-stat-card-icon">
+                    <svg class="app-icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="app-stat-card-content">
+                    <div class="app-stat-card-value">$24.8k</div>
+                    <div class="app-stat-card-label">Monthly Revenue</div>
+                    <div class="app-stat-card-trend app-stat-card-trend-up">
+                        <svg class="app-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                        </svg>
+                        <span>+15%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="app-section">
+            <div class="app-section-header">
+                <h2 class="app-section-title">Quick Actions</h2>
+                <p class="app-section-subtitle">Manage your fleet efficiently</p>
+            </div>
+            <div class="app-action-grid">
+                <a href="/cars" class="app-action-card">
+                    <div class="app-action-card-icon">
+                        <svg class="app-icon-xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div class="app-action-card-content">
+                        <h3 class="app-action-card-title">Fleet Management</h3>
+                        <p class="app-action-card-description">Manage your vehicle inventory, add new cars, update details, and track maintenance.</p>
+                    </div>
+                    <div class="app-action-card-arrow">
+                        <svg class="app-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+
+                <a href="/bookings" class="app-action-card">
+                    <div class="app-action-card-icon">
+                        <svg class="app-icon-xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div class="app-action-card-content">
+                        <h3 class="app-action-card-title">Booking Management</h3>
+                        <p class="app-action-card-description">Handle reservations, check availability, process returns, and manage schedules.</p>
+                    </div>
+                    <div class="app-action-card-arrow">
+                        <svg class="app-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+
+                <a href="/customers" class="app-action-card">
+                    <div class="app-action-card-icon">
+                        <svg class="app-icon-xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </div>
+                    <div class="app-action-card-content">
+                        <h3 class="app-action-card-title">Customer Service</h3>
+                        <p class="app-action-card-description">View customer profiles, manage loyalty programs, and handle support requests.</p>
+                    </div>
+                    <div class="app-action-card-arrow">
+                        <svg class="app-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+
+                <div sec:authorize="hasRole('ADMIN')" class="app-action-card">
+                    <div class="app-action-card-icon">
+                        <svg class="app-icon-xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="app-action-card-content">
+                        <h3 class="app-action-card-title">Analytics & Reports</h3>
+                        <p class="app-action-card-description">Generate detailed reports, track performance metrics, and analyze business insights.</p>
+                    </div>
+                    <div class="app-action-card-arrow">
+                        <svg class="app-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="app-section">
+            <div class="app-section-header">
+                <h2 class="app-section-title">Recent Activity</h2>
+                <a href="/activity" class="app-link">View All</a>
+            </div>
+            <div class="app-activity-feed">
+                <div class="app-activity-item">
+                    <div class="app-activity-icon app-activity-icon-success">
+                        <svg class="app-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <div class="app-activity-content">
+                        <p class="app-activity-text">BMW X3 returned successfully</p>
+                        <span class="app-activity-meta">2 hours ago • John Smith</span>
+                    </div>
+                </div>
+
+                <div class="app-activity-item">
+                    <div class="app-activity-icon app-activity-icon-info">
+                        <svg class="app-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                    </div>
+                    <div class="app-activity-content">
+                        <p class="app-activity-text">New customer registration</p>
+                        <span class="app-activity-meta">4 hours ago • Sarah Johnson</span>
+                    </div>
+                </div>
+
+                <div class="app-activity-item">
+                    <div class="app-activity-icon app-activity-icon-warning">
+                        <svg class="app-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <div class="app-activity-content">
+                        <p class="app-activity-text">Maintenance scheduled for Tesla Model 3</p>
+                        <span class="app-activity-meta">6 hours ago • Mike Chen</span>
+                    </div>
+                </div>
+
+                <div class="app-activity-item">
+                    <div class="app-activity-icon app-activity-icon-primary">
+                        <svg class="app-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div class="app-activity-content">
+                        <p class="app-activity-text">Audi Q5 booked for weekend</p>
+                        <span class="app-activity-meta">8 hours ago • David Wilson</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Dashboard specific JavaScript
+        function refreshDashboard() {
+            // Show loading state
+            showToast('Refreshing dashboard...', 'info');
+            
+            // Simulate refresh
+            setTimeout(() => {
+                showToast('Dashboard refreshed successfully', 'success');
+            }, 1000);
+        }
+
+        // Auto-refresh stats every 5 minutes
+        setInterval(() => {
+            // Simulate stat updates
+            const statValues = document.querySelectorAll('.app-stat-card-value');
+            statValues.forEach(value => {
+                value.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    value.style.transform = 'scale(1)';
+                }, 200);
+            });
+        }, 300000);
+
+        // Initialize dashboard animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate stats cards on load
+            const statCards = document.querySelectorAll('.app-stat-card');
+            statCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('app-animate-fade-in-up');
+                }, index * 100);
+            });
+
+            // Animate action cards
+            const actionCards = document.querySelectorAll('.app-action-card');
+            actionCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('app-animate-fade-in-up');
+                }, 400 + (index * 100));
+            });
+        });
+    </script>
+</body>
+</html>

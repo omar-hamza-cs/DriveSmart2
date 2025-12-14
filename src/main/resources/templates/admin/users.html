@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::script}, 'admin-users')}">
+<head>
+    <title>User Management - DriveSmart</title>
+</head>
+<body>
+    <main th:fragment="main-content">
+        <div class="container">
+            <!-- Header -->
+            <div class="mb-4" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1 style="font-size: 1.75rem; font-weight: bold; color: #5D707F;">User Management</h1>
+                    <p style="color: #6C757D;" th:text="${#lists.size(users)} + ' users'">0 users</p>
+                </div>
+                <a href="/admin/users/new" class="btn btn-primary">Add New User</a>
+            </div>
+
+            <!-- Search & Stats -->
+            <div class="card mb-4">
+                <div style="margin-bottom: 1.5rem;">
+                    <input type="text" placeholder="Search users by name, email, or phone..." 
+                           style="width: 100%; padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem;">
+                </div>
+                
+                <div class="grid-4">
+                    <div class="card text-center">
+                        <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">👥</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;">1,248</div>
+                        <div style="color: #6C757D; font-size: 0.875rem;">Total Users</div>
+                    </div>
+                    <div class="card text-center">
+                        <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">✅</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;">1,125</div>
+                        <div style="color: #6C757D; font-size: 0.875rem;">Active</div>
+                    </div>
+                    <div class="card text-center">
+                        <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">👑</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;">24</div>
+                        <div style="color: #6C757D; font-size: 0.875rem;">Admins</div>
+                    </div>
+                    <div class="card text-center">
+                        <div style="font-size: 2rem; color: #66CED6; margin-bottom: 0.5rem;">📅</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #5D707F;">12</div>
+                        <div style="color: #6C757D; font-size: 0.875rem;">New Today</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="mb-4" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button class="btn btn-primary">All Users</button>
+                <button class="btn btn-outline">Admins</button>
+                <button class="btn btn-outline">Staff</button>
+                <button class="btn btn-outline">Customers</button>
+                <button class="btn btn-outline">Active</button>
+                <button class="btn btn-outline">Inactive</button>
+            </div>
+
+            <!-- Users Table -->
+            <div class="card">
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr style="background: #F8F9FA;">
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #5D707F;">User</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #5D707F;">Role</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #5D707F;">Status</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #5D707F;">Last Active</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #5D707F;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="u : ${users}" style="border-bottom: 1px solid #E9ECEF;">
+                                <td style="padding: 1rem;">
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <div style="width: 2.5rem; height: 2.5rem; background: linear-gradient(135deg, #A7A5C6, #8797B2); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600;" th:text="${u.fullName.substring(0,1)} + (${u.fullName.indexOf(' ') > 0 ? u.fullName.substring(u.fullName.indexOf(' ')+1, u.fullName.indexOf(' ')+2) : ''})">U</div>
+                                        <div>
+                                            <div style="font-weight: 500; color: #5D707F;" th:text="${u.fullName}">User Name</div>
+                                            <div style="color: #6C757D; font-size: 0.875rem;" th:text="${u.email}">user@example.com</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="padding: 1rem;">
+                                    <span th:text="${u.role}" style="padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600; background: #DBEAFE; color: #1E40AF;">Role</span>
+                                </td>
+                                <td style="padding: 1rem;">
+                                    <span th:text="${u.isActive} ? 'Active' : 'Inactive'" th:style="${u.isActive} ? 'background:#DCFCE7;color:#166534;padding:.25rem .75rem;border-radius:1rem;font-size:.75rem;font-weight:600' : 'background:#FEE2E2;color:#DC2626;padding:.25rem .75rem;border-radius:1rem;font-size:.75rem;font-weight:600'">Active</span>
+                                </td>
+                                <td style="padding: 1rem; color: #6C757D;" th:text="${u.updatedAt}">Updated</td>
+                                <td style="padding: 1rem;">
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <a th:href="@{'/admin/users/' + ${u.id} + '/edit'}" class="btn btn-outline" style="font-size: 0.875rem; padding: 0.25rem 0.75rem;">Edit</a>
+                                        <form th:action="@{'/admin/users/' + ${u.id} + '/toggle-status'}" method="post">
+                                            <button type="submit" class="btn btn-outline" th:style="${u.isActive} ? 'font-size:.875rem;padding:.25rem .75rem;color:#DC2626;border-color:#DC2626' : 'font-size:.875rem;padding:.25rem .75rem;color:#166534;border-color:#166534'" th:text="${u.isActive} ? 'Deactivate' : 'Activate'">Toggle</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div style="display: flex; justify-content: center; gap: 0.5rem; padding: 1.5rem; border-top: 1px solid #E9ECEF;">
+                    <button class="btn btn-outline" style="padding: 0.5rem 1rem;">← Previous</button>
+                    <button class="btn btn-primary" style="padding: 0.5rem 1rem;">1</button>
+                    <button class="btn btn-outline" style="padding: 0.5rem 1rem;">2</button>
+                    <button class="btn btn-outline" style="padding: 0.5rem 1rem;">3</button>
+                    <button class="btn btn-outline" style="padding: 0.5rem 1rem;">Next →</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('User management page loaded');
+                
+                // Filter buttons
+                document.querySelectorAll('.btn-outline').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        // Remove primary from all buttons
+                        document.querySelectorAll('.btn-outline, .btn-primary').forEach(b => {
+                            b.classList.remove('btn-primary');
+                            b.classList.add('btn-outline');
+                        });
+                        
+                        // Make this button primary
+                        this.classList.remove('btn-outline');
+                        this.classList.add('btn-primary');
+                        
+                        console.log('Filter:', this.textContent);
+                    });
+                });
+                
+                // Deactivate/Activate buttons
+                document.querySelectorAll('button[style*="DC2626"]').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        if (confirm('Are you sure you want to deactivate this user?')) {
+                            alert('User would be deactivated');
+                        }
+                    });
+                });
+                
+                document.querySelectorAll('button[style*="166534"]').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        if (confirm('Are you sure you want to activate this user?')) {
+                            alert('User would be activated');
+                        }
+                    });
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html>

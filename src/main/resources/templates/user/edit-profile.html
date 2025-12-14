@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::scripts}, 'profile')}">
+<head>
+    <title>Edit Profile - DriveSmart</title>
+</head>
+<body>
+<main th:fragment="main-content">
+    <div class="container" style="max-width: 640px;">
+        <div class="mb-4">
+            <h1 style="font-size: 1.5rem; font-weight: 700; color: #5D707F;">Edit Profile</h1>
+        </div>
+        <div class="card">
+            <form th:action="@{/user/edit-profile}" th:object="${user}" method="post">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display:block; margin-bottom:0.5rem; color:#5D707F; font-weight:600">Full Name</label>
+                    <input type="text" class="card" th:field="*{fullName}" required>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display:block; margin-bottom:0.5rem; color:#5D707F; font-weight:600">Phone Number</label>
+                    <input type="text" class="card" th:field="*{phoneNumber}" required>
+                </div>
+                <div class="flex justify-between" style="margin-top:1rem;">
+                    <a th:href="@{/user/profile}" class="btn btn-outline">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </main>
+    <th:block th:fragment="scripts">
+        <script>document.addEventListener('DOMContentLoaded',()=>{});</script>
+    </th:block>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::script}, 'booking-details')}">
+<head>
+    <title>Booking Details - DriveSmart</title>
+</head>
+<body>
+    <main th:fragment="main-content">
+        <div class="container">
+            <!-- Header -->
+            <div class="mb-4" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1 style="font-size: 1.75rem; font-weight: bold; color: #5D707F;">Booking Details</h1>
+                    <p style="color: #6C757D;">Review and manage this booking</p>
+                </div>
+                <a th:href="@{/bookings}" class="btn btn-outline">Back to Bookings</a>
+            </div>
+
+            <!-- Messages -->
+            <div th:if="${error}" class="mb-3" style="background: rgba(255, 107, 107, 0.1); border: 1px solid #FF6B6B; color: #FF6B6B; padding: 1rem; border-radius: 0.5rem;">
+                <span th:text="${error}"></span>
+            </div>
+            <div th:if="${success}" class="mb-3" style="background: rgba(102, 206, 214, 0.1); border: 1px solid #66CED6; color: #66CED6; padding: 1rem; border-radius: 0.5rem;">
+                <span th:text="${success}"></span>
+            </div>
+
+            <!-- Booking Info Grid -->
+            <div class="grid-4 mb-4">
+                <div class="card">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="font-size: 1.25rem; color: #66CED6;">📅</div>
+                        <div style="font-weight: 600; color: #5D707F;">Summary</div>
+                    </div>
+                    <div style="border-top: 1px solid #E9ECEF; padding-top: 0.75rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #F8F9FA;">
+                            <span style="color: #6C757D;">Booking ID</span>
+                            <span style="font-weight: 500; color: #5D707F;" th:text="${booking.id}">1</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span style="color: #6C757D;">Status</span>
+                            <span style="background: #66CED6; color: white; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 500;" 
+                                  th:text="${booking.status}">CONFIRMED</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="font-size: 1.25rem; color: #66CED6;">👤</div>
+                        <div style="font-weight: 600; color: #5D707F;">Customer</div>
+                    </div>
+                    <div style="border-top: 1px solid #E9ECEF; padding-top: 0.75rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #F8F9FA;">
+                            <span style="color: #6C757D;">Name</span>
+                            <span style="font-weight: 500; color: #5D707F;" th:text="${booking.user.name}">John Doe</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span style="color: #6C757D;">Email</span>
+                            <span style="font-weight: 500; color: #5D707F;" th:text="${booking.user.email}">john@drivesmart.com</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="height: 20px;"><img src="/images/logov1-removebg-preview.png" alt="Vehicle" style="height:20px"></div>
+                        <div style="font-weight: 600; color: #5D707F;">Vehicle</div>
+                    </div>
+                    <div style="border-top: 1px solid #E9ECEF; padding-top: 0.75rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #F8F9FA;">
+                            <span style="color: #6C757D;">Car</span>
+                            <span style="font-weight: 500; color: #5D707F;" th:text="${booking.car.brand + ' ' + booking.car.model}">Audi A6</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span style="color: #6C757D;">Rate</span>
+                            <span style="font-weight: 500; color: #5D707F;" th:text="'$' + ${booking.car.pricePerDay}">$129.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="font-size: 1.25rem; color: #66CED6;">💰</div>
+                        <div style="font-weight: 600; color: #5D707F;">Pricing</div>
+                    </div>
+                    <div style="border-top: 1px solid #E9ECEF; padding-top: 0.75rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #F8F9FA;">
+                            <span style="color: #6C757D;">Total Price</span>
+                            <span style="font-weight: 500; color: #5D707F;" th:text="'$' + ${booking.totalPrice}">$120.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span style="color: #6C757D;">Payment Status</span>
+                            <span style="color: #66CED6; font-weight: 500;">Paid</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dates Section -->
+            <div class="card mb-4">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                    <div style="font-size: 1.25rem; color: #66CED6;">📆</div>
+                    <div style="font-weight: 600; color: #5D707F;">Dates</div>
+                </div>
+                <div class="grid-4">
+                    <div>
+                        <div style="color: #6C757D; font-size: 0.875rem; margin-bottom: 0.25rem;">Start Date</div>
+                        <div style="font-weight: 500; color: #5D707F;" th:text="${booking.startDate}">2025-01-01</div>
+                    </div>
+                    <div>
+                        <div style="color: #6C757D; font-size: 0.875rem; margin-bottom: 0.25rem;">End Date</div>
+                        <div style="font-weight: 500; color: #5D707F;" th:text="${booking.endDate}">2025-01-03</div>
+                    </div>
+                    <div>
+                        <div style="color: #6C757D; font-size: 0.875rem; margin-bottom: 0.25rem;">Duration</div>
+                        <div style="font-weight: 500; color: #5D707F;">3 days</div>
+                    </div>
+                    <div>
+                        <div style="color: #6C757D; font-size: 0.875rem; margin-bottom: 0.25rem;">Days Remaining</div>
+                        <div style="font-weight: 500; color: #5D707F;">2 days</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="card">
+                <h2 style="font-size: 1.25rem; font-weight: 600; color: #5D707F; margin-bottom: 1rem;">Manage Booking</h2>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <form th:action="@{'/bookings/' + ${booking.id} + '/cancel'}" method="post">
+                        <button type="submit" class="btn btn-outline">Cancel Booking</button>
+                    </form>
+                    <form th:action="@{'/bookings/' + ${booking.id} + '/status'}" method="post" style="display: flex; gap: 0.5rem; align-items: center;">
+                        <select name="status" style="padding: 0.75rem; border: 1px solid #E9ECEF; border-radius: 0.5rem; font-size: 0.875rem;">
+                            <option value="CONFIRMED">Confirm</option>
+                            <option value="ACTIVE">Active</option>
+                            <option value="COMPLETED">Completed</option>
+                            <option value="CANCELLED">Cancelled</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Booking details page loaded');
+                
+                // Confirm cancellation
+                const cancelBtn = document.querySelector('button[type="submit"]');
+                if (cancelBtn && cancelBtn.textContent.includes('Cancel')) {
+                    cancelBtn.addEventListener('click', function(e) {
+                        if (!confirm('Are you sure you want to cancel this booking?')) {
+                            e.preventDefault();
+                        }
+                    });
+                }
+                
+                // Add status badge colors
+                const statusBadge = document.querySelector('span[th\\:text="${booking.status}"]');
+                if (statusBadge) {
+                    const status = statusBadge.textContent;
+                    if (status === 'CANCELLED') {
+                        statusBadge.style.background = '#FF6B6B';
+                    } else if (status === 'PENDING') {
+                        statusBadge.style.background = '#FFD93D';
+                        statusBadge.style.color = '#5D707F';
+                    } else if (status === 'COMPLETED') {
+                        statusBadge.style.background = '#6D8A96';
+                    }
+                }
+            });
+        </script>
+    </th:block>
+</body>
+</html>

@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::main}, ~{::script}, 'my-cars')}">
+<head>
+    <title>Add Your Car - DriveSmart</title>
+</head>
+<body>
+    <main>
+        <div class="container" style="padding: 2rem 1rem;">
+            
+            <!-- Page Header -->
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h1 style="font-size: 1.75rem; color: var(--dark); margin-bottom: 0.25rem;">Add Your Car</h1>
+                    <p class="text-secondary">List your car for rental on DriveSmart</p>
+                </div>
+                <a href="/cars" class="btn btn-outline">← Back to Cars</a>
+            </div>
+
+            <!-- Alerts -->
+            <div th:if="${error}" class="card mb-4" style="background: rgba(220, 53, 69, 0.1); border-color: #dc3545;">
+                <div class="flex items-center gap-2" style="color: #dc3545;">
+                    <span>⚠️</span>
+                    <span th:text="${error}"></span>
+                </div>
+            </div>
+            
+            <div th:if="${success}" class="card mb-4" style="background: rgba(25, 135, 84, 0.1); border-color: #198754;">
+                <div class="flex items-center gap-2" style="color: #198754;">
+                    <span>✅</span>
+                    <span>Car added successfully! It's now available for rental.</span>
+                </div>
+            </div>
+
+            <!-- Form Container -->
+            <div class="card mb-4">
+                <form th:action="@{/user/cars/add}" th:object="${car}" method="post" enctype="multipart/form-data" id="carForm">
+                    
+                    <!-- Step Indicator -->
+                    <div class="flex justify-center mb-8" style="position: relative;">
+                        <!-- Progress Line -->
+                        <div style="position: absolute; top: 20px; left: 0; right: 0; height: 2px; background: var(--border); z-index: 1;"></div>
+                        <div id="progressLine" style="position: absolute; top: 20px; left: 0; height: 2px; background: var(--cta); z-index: 2; width: 0%;"></div>
+                        
+                        <!-- Steps -->
+                        <div class="flex justify-between" style="width: 100%; max-width: 600px; position: relative; z-index: 3;">
+                            <div class="step-circle active" data-step="1">
+                                <div class="step-number">1</div>
+                                <div class="step-label" style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--cta);">Basic Info</div>
+                            </div>
+                            <div class="step-circle" data-step="2">
+                                <div class="step-number">2</div>
+                                <div class="step-label" style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">Details</div>
+                            </div>
+                            <div class="step-circle" data-step="3">
+                                <div class="step-number">3</div>
+                                <div class="step-label" style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">Review</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Basic Information -->
+                    <div class="form-step active" id="step1">
+                        <h2 style="color: var(--dark); margin-bottom: 1.5rem; font-size: 1.25rem;">Car Information</h2>
+                        
+                        <!-- Image Upload Section -->
+                        <div class="card mb-4" style="border: 2px dashed var(--border); cursor: pointer;" id="uploadArea">
+                            <div class="text-center" style="padding: 2rem;">
+                                <div style="width: 60px; height: 60px; background: var(--cta); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                                    <span style="font-size: 1.5rem; color: white;">📷</span>
+                                </div>
+                                <h3 style="color: var(--dark); margin-bottom: 0.5rem;">Upload Car Photos</h3>
+                                <p class="text-secondary" style="margin-bottom: 1rem;">Good photos attract more renters! (JPG, PNG, max 5MB each)</p>
+                                <input type="file" id="imageFile" name="imageFile" accept="image/*" 
+                                       style="display: none;" onchange="previewImage(this)" multiple>
+                                <div class="btn btn-outline" onclick="document.getElementById('imageFile').click()">Choose Photos</div>
+                            </div>
+                            <!-- Image Previews -->
+                            <div id="imagePreviews" style="display: none; padding: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;"></div>
+                            <div id="fileInfo" style="display: none; padding: 1rem; background: var(--bg-secondary); border-radius: 0.5rem; margin-top: 1rem;">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--dark);" id="fileName"></div>
+                                        <div class="text-secondary" style="font-size: 0.875rem;" id="fileSize"></div>
+                                    </div>
+                                    <button type="button" class="btn btn-outline" style="color: #dc3545; border-color: #dc3545;" onclick="removeImages()">Remove All</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Basic Info Form -->
+                        <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin: 1.5rem 0;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Brand *</label>
+                                <input type="text" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                       id="brand" name="brand" th:field="*{brand}" placeholder="e.g., Toyota" required>
+                                <div th:if="${#fields.hasErrors('brand')}" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;" th:errors="*{brand}"></div>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Model *</label>
+                                <input type="text" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                       id="model" name="model" th:field="*{model}" placeholder="e.g., Camry" required>
+                                <div th:if="${#fields.hasErrors('model')}" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;" th:errors="*{model}"></div>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Year *</label>
+                                <input type="number" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                       id="year" name="year" th:field="*{year}" placeholder="e.g., 2023" min="1990" max="2030" required>
+                                <div th:if="${#fields.hasErrors('year')}" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;" th:errors="*{year}"></div>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Color *</label>
+                                <input type="text" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                       id="color" name="color" th:field="*{color}" placeholder="e.g., Red" required>
+                                <div th:if="${#fields.hasErrors('color')}" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;" th:errors="*{color}"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4" style="background: rgba(102, 206, 214, 0.05); border: 1px solid rgba(102, 206, 214, 0.3);">
+                            <div class="flex items-start gap-2">
+                                <div style="color: var(--cta);">💡</div>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--dark); margin-bottom: 0.25rem;">Tips for Better Listings</div>
+                                    <div class="text-secondary" style="font-size: 0.875rem;">
+                                        • Upload clear photos from multiple angles<br>
+                                        • Complete all fields accurately<br>
+                                        • Set a competitive daily rate<br>
+                                        • Detailed descriptions attract more renters
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end gap-2 mt-4" style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                            <button type="button" class="btn btn-primary" onclick="nextStep(2)">
+                                Continue →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Car Details -->
+                    <div class="form-step" id="step2" style="display: none;">
+                        <h2 style="color: var(--dark); margin-bottom: 1.5rem; font-size: 1.25rem;">Car Details</h2>
+                        
+                        <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin: 1.5rem 0;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">License Plate *</label>
+                                <input type="text" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                       id="licensePlate" name="licensePlate" th:field="*{licensePlate}" placeholder="e.g., ABC-123" required>
+                                <div th:if="${#fields.hasErrors('licensePlate')}" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;" th:errors="*{licensePlate}"></div>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Daily Rate ($) *</label>
+                                <input type="number" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                       id="pricePerDay" name="pricePerDay" th:field="*{pricePerDay}" placeholder="e.g., 49.99" step="0.01" min="0" required>
+                                <div th:if="${#fields.hasErrors('pricePerDay')}" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;" th:errors="*{pricePerDay}"></div>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Transmission *</label>
+                                <select class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                        id="transmission" name="transmission" th:field="*{transmission}" required>
+                                    <option value="">Select transmission</option>
+                                    <option value="AUTOMATIC">Automatic</option>
+                                    <option value="MANUAL">Manual</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Seats *</label>
+                                <input type="number" class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border);" 
+                                       id="seats" name="seats" th:field="*{seats}" placeholder="e.g., 5" min="2" max="12" required>
+                                <div th:if="${#fields.hasErrors('seats')}" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;" th:errors="*{seats}"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Additional Details -->
+                        <div style="margin: 1.5rem 0;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Description</label>
+                            <textarea class="card" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); min-height: 120px;" 
+                                     id="description" name="description" th:field="*{description}" 
+                                     placeholder="Describe your car's features, condition, special notes for renters..."></textarea>
+                            <div class="text-secondary" style="font-size: 0.875rem; margin-top: 0.25rem;">
+                                Include mileage, fuel type, features, parking location, etc.
+                            </div>
+                        </div>
+                        
+                        <!-- Features Selection -->
+                        <div style="margin: 1.5rem 0;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--dark);">Car Features (Optional)</label>
+                            <div class="card" style="border: 1px solid var(--border); padding: 1rem;">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem;">
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                        <input type="checkbox" name="features" value="Air Conditioning" style="width: 18px; height: 18px;">
+                                        <span>Air Conditioning</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                        <input type="checkbox" name="features" value="Bluetooth" style="width: 18px; height: 18px;">
+                                        <span>Bluetooth</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                        <input type="checkbox" name="features" value="GPS Navigation" style="width: 18px; height: 18px;">
+                                        <span>GPS Navigation</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                        <input type="checkbox" name="features" value="Backup Camera" style="width: 18px; height: 18px;">
+                                        <span>Backup Camera</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                        <input type="checkbox" name="features" value="Sunroof" style="width: 18px; height: 18px;">
+                                        <span>Sunroof</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                        <input type="checkbox" name="features" value="Leather Seats" style="width: 18px; height: 18px;">
+                                        <span>Leather Seats</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between gap-2 mt-4" style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                            <button type="button" class="btn btn-outline" onclick="prevStep(1)">
+                                ← Back
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="nextStep(3)">
+                                Continue →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Review & Submit -->
+                    <div class="form-step" id="step3" style="display: none;">
+                        <h2 style="color: var(--dark); margin-bottom: 1.5rem; font-size: 1.25rem;">Review & Submit</h2>
+                        
+                        <div class="card mb-4" style="background: rgba(102, 206, 214, 0.1); border-color: var(--cta);">
+                            <div class="flex items-center gap-2">
+                                <span style="color: var(--cta);">🎉</span>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--dark);">Almost there! Review your car listing before publishing.</div>
+                                    <div class="text-secondary" style="font-size: 0.875rem;">Your car will be available for rent immediately after approval.</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Summary Card -->
+                        <div class="card mb-4">
+                            <h3 style="color: var(--dark); margin-bottom: 1rem; font-weight: 600;">Car Listing Summary</h3>
+                            
+                            <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                                <div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="color: var(--text-secondary); font-size: 0.875rem;">Car</div>
+                                        <div style="font-weight: 600; color: var(--dark);" id="summaryCar">-</div>
+                                    </div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="color: var(--text-secondary); font-size: 0.875rem;">Year & Color</div>
+                                        <div style="font-weight: 600; color: var(--dark);" id="summaryYearColor">-</div>
+                                    </div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="color: var(--text-secondary); font-size: 0.875rem;">Transmission</div>
+                                        <div style="font-weight: 600; color: var(--dark);" id="summaryTransmission">-</div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="color: var(--text-secondary); font-size: 0.875rem;">License Plate</div>
+                                        <div style="font-weight: 600; color: var(--dark);" id="summaryLicense">-</div>
+                                    </div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="color: var(--text-secondary); font-size: 0.875rem;">Daily Rate</div>
+                                        <div style="font-weight: 600; color: var(--dark);" id="summaryPrice">-</div>
+                                    </div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="color: var(--text-secondary); font-size: 0.875rem;">Seats</div>
+                                        <div style="font-weight: 600; color: var(--dark);" id="summarySeats">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Features Summary -->
+                            <div id="featuresSummary" style="margin-top: 1rem; display: none;">
+                                <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem;">Features</div>
+                                <div id="featuresList" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
+                            </div>
+                            
+                            <!-- Photos Preview -->
+                            <div id="photosPreview" style="margin-top: 1rem; display: none;">
+                                <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem;">Photos</div>
+                                <div id="photosList" style="display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+                            </div>
+                            
+                            <!-- Terms & Conditions -->
+                            <div class="card mt-4" style="background: var(--bg-secondary);">
+                                <div style="margin-bottom: 1rem;">
+                                    <div style="font-weight: 600; color: var(--dark); margin-bottom: 0.5rem;">Terms & Conditions</div>
+                                    <div class="text-secondary" style="font-size: 0.875rem;">
+                                        By listing your car, you agree to:<br>
+                                        • Maintain valid insurance and registration<br>
+                                        • Keep the car in safe, working condition<br>
+                                        • Respond to booking requests within 24 hours<br>
+                                        • Follow DriveSmart's cancellation policies
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" id="termsCheck" required style="width: 18px; height: 18px;">
+                                    <label for="termsCheck" style="cursor: pointer; color: var(--dark);">
+                                        I agree to the terms and confirm all information is accurate
+                                    </label>
+                                </div>
+                                <div id="termsError" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.5rem; display: none;">
+                                    You must agree to the terms before submitting
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between gap-2 mt-4" style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                            <button type="button" class="btn btn-outline" onclick="prevStep(2)">
+                                ← Back
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="submitForm()">
+                                ✅ Publish Listing
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Earnings Calculator -->
+            <div class="card">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <div style="width: 48px; height: 48px; background: var(--cta); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <span style="color: white; font-size: 1.25rem;">💰</span>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; color: var(--dark);">Potential Earnings</div>
+                        <div class="text-secondary" style="font-size: 0.875rem;">Estimate your monthly income</div>
+                    </div>
+                </div>
+                
+                <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                    <div class="card text-center" style="border: 1px solid var(--border);">
+                        <div style="font-size: 1.5rem; color: var(--cta); margin-bottom: 0.5rem;">5 days/month</div>
+                        <div class="text-secondary" style="font-size: 0.875rem;">≈ $250</div>
+                    </div>
+                    
+                    <div class="card text-center" style="border: 1px solid var(--border);">
+                        <div style="font-size: 1.5rem; color: var(--cta); margin-bottom: 0.5rem;">10 days/month</div>
+                        <div class="text-secondary" style="font-size: 0.875rem;">≈ $500</div>
+                    </div>
+                    
+                    <div class="card text-center" style="border: 1px solid var(--border);">
+                        <div style="font-size: 1.5rem; color: var(--cta); margin-bottom: 0.5rem;">15 days/month</div>
+                        <div class="text-secondary" style="font-size: 0.875rem;">≈ $750</div>
+                    </div>
+                    
+                    <div class="card text-center" style="border: 1px solid var(--border);">
+                        <div style="font-size: 1.5rem; color: var(--cta); margin-bottom: 0.5rem;">20 days/month</div>
+                        <div class="text-secondary" style="font-size: 0.875rem;">≈ $1000</div>
+                    </div>
+                </div>
+                
+                <div class="text-secondary" style="margin-top: 1rem; font-size: 0.875rem;">
+                    *Estimates based on average rental rates and utilization. Actual earnings may vary.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentStep = 1;
+            let selectedImages = [];
+            
+            // Make upload area clickable
+            const uploadArea = document.getElementById('uploadArea');
+            if (uploadArea) {
+                uploadArea.addEventListener('click', function(e) {
+                    if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+                        document.getElementById('imageFile').click();
+                    }
+                });
+            }
+            
+            // Initialize step circles
+            document.querySelectorAll('.step-circle').forEach(circle => {
+                circle.addEventListener('click', function() {
+                    const step = parseInt(this.getAttribute('data-step'));
+                    if (step < currentStep) {
+                        goToStep(step);
+                    }
+                });
+            });
+            
+            // Update progress line
+            function updateProgressLine() {
+                const progressLine = document.getElementById('progressLine');
+                const progress = ((currentStep - 1) / 2) * 100; // 2 steps between 3 steps
+                if (progressLine) {
+                    progressLine.style.width = `${progress}%`;
+                }
+                
+                // Update step circles
+                document.querySelectorAll('.step-circle').forEach(circle => {
+                    const step = parseInt(circle.getAttribute('data-step'));
+                    const stepNumber = circle.querySelector('.step-number');
+                    const stepLabel = circle.querySelector('.step-label');
+                    
+                    if (step <= currentStep) {
+                        stepNumber.style.background = 'var(--cta)';
+                        stepNumber.style.color = 'white';
+                        stepLabel.style.color = 'var(--cta)';
+                    } else {
+                        stepNumber.style.background = 'var(--border)';
+                        stepNumber.style.color = 'var(--text-secondary)';
+                        stepLabel.style.color = 'var(--text-secondary)';
+                    }
+                    
+                    if (step === currentStep) {
+                        stepNumber.style.border = '2px solid var(--cta)';
+                    } else {
+                        stepNumber.style.border = 'none';
+                    }
+                });
+            }
+            
+            // Image preview function with multiple files
+            window.previewImage = function(input) {
+                if (input.files && input.files.length > 0) {
+                    const files = Array.from(input.files);
+                    const maxSize = 5 * 1024 * 1024; // 5MB
+                    
+                    // Filter valid files
+                    const validFiles = files.filter(file => {
+                        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                        return validTypes.includes(file.type) && file.size <= maxSize;
+                    });
+                    
+                    if (validFiles.length !== files.length) {
+                        alert('Some files were skipped. Only JPG, PNG, GIF files under 5MB are allowed.');
+                    }
+                    
+                    // Process valid files
+                    validFiles.forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            // Add to selected images
+                            selectedImages.push({
+                                file: file,
+                                dataUrl: e.target.result
+                            });
+                            
+                            // Update UI
+                            updateImagePreviews();
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                    
+                    // Update upload area
+                    uploadArea.style.borderStyle = 'solid';
+                    uploadArea.style.borderColor = 'var(--cta)';
+                    
+                    // Show file info
+                    const fileInfo = document.getElementById('fileInfo');
+                    const fileName = document.getElementById('fileName');
+                    const fileSize = document.getElementById('fileSize');
+                    
+                    fileName.textContent = `${validFiles.length} photo${validFiles.length > 1 ? 's' : ''} selected`;
+                    fileSize.textContent = formatFileSize(validFiles.reduce((sum, file) => sum + file.size, 0));
+                    fileInfo.style.display = 'block';
+                }
+            };
+            
+            // Update image previews
+            function updateImagePreviews() {
+                const previewsContainer = document.getElementById('imagePreviews');
+                previewsContainer.innerHTML = '';
+                
+                selectedImages.forEach((image, index) => {
+                    const preview = document.createElement('div');
+                    preview.style.position = 'relative';
+                    preview.style.width = '100px';
+                    preview.style.height = '100px';
+                    
+                    const img = document.createElement('img');
+                    img.src = image.dataUrl;
+                    img.alt = 'Car photo';
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '0.5rem';
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.innerHTML = '×';
+                    removeBtn.style.position = 'absolute';
+                    removeBtn.style.top = '-8px';
+                    removeBtn.style.right = '-8px';
+                    removeBtn.style.width = '24px';
+                    removeBtn.style.height = '24px';
+                    removeBtn.style.background = '#dc3545';
+                    removeBtn.style.color = 'white';
+                    removeBtn.style.border = 'none';
+                    removeBtn.style.borderRadius = '50%';
+                    removeBtn.style.cursor = 'pointer';
+                    removeBtn.style.fontSize = '16px';
+                    removeBtn.addEventListener('click', () => removeImage(index));
+                    
+                    preview.appendChild(img);
+                    preview.appendChild(removeBtn);
+                    previewsContainer.appendChild(preview);
+                });
+                
+                previewsContainer.style.display = selectedImages.length > 0 ? 'flex' : 'none';
+                
+                // Update photos preview in summary
+                updatePhotosPreview();
+            }
+            
+            // Remove single image
+            function removeImage(index) {
+                selectedImages.splice(index, 1);
+                updateImagePreviews();
+                
+                if (selectedImages.length === 0) {
+                    const fileInfo = document.getElementById('fileInfo');
+                    fileInfo.style.display = 'none';
+                    uploadArea.style.borderStyle = 'dashed';
+                    uploadArea.style.borderColor = 'var(--border)';
+                } else {
+                    const fileName = document.getElementById('fileName');
+                    const fileSize = document.getElementById('fileSize');
+                    fileName.textContent = `${selectedImages.length} photo${selectedImages.length > 1 ? 's' : ''} selected`;
+                    fileSize.textContent = formatFileSize(selectedImages.reduce((sum, image) => sum + image.file.size, 0));
+                }
+            }
+            
+            // Remove all images
+            window.removeImages = function() {
+                selectedImages = [];
+                updateImagePreviews();
+                const fileInfo = document.getElementById('fileInfo');
+                fileInfo.style.display = 'none';
+                uploadArea.style.borderStyle = 'dashed';
+                uploadArea.style.borderColor = 'var(--border)';
+                document.getElementById('imageFile').value = '';
+            };
+            
+            // Format file size
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // Update photos preview in summary
+            function updatePhotosPreview() {
+                const photosList = document.getElementById('photosList');
+                const photosPreview = document.getElementById('photosPreview');
+                
+                photosList.innerHTML = '';
+                
+                selectedImages.slice(0, 4).forEach((image, index) => {
+                    const img = document.createElement('img');
+                    img.src = image.dataUrl;
+                    img.alt = 'Car photo';
+                    img.style.width = '80px';
+                    img.style.height = '60px';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '0.25rem';
+                    img.style.border = '1px solid var(--border)';
+                    photosList.appendChild(img);
+                });
+                
+                if (selectedImages.length > 4) {
+                    const more = document.createElement('div');
+                    more.textContent = `+${selectedImages.length - 4} more`;
+                    more.style.display = 'flex';
+                    more.style.alignItems = 'center';
+                    more.style.justifyContent = 'center';
+                    more.style.width = '80px';
+                    more.style.height = '60px';
+                    more.style.background = 'var(--bg-secondary)';
+                    more.style.borderRadius = '0.25rem';
+                    more.style.fontSize = '0.75rem';
+                    more.style.color = 'var(--text-secondary)';
+                    photosList.appendChild(more);
+                }
+                
+                photosPreview.style.display = selectedImages.length > 0 ? 'block' : 'none';
+            }
+            
+            // Step navigation functions
+            window.nextStep = function(step) {
+                // Validate current step
+                const currentSection = document.getElementById(`step${currentStep}`);
+                const requiredFields = currentSection.querySelectorAll('[required]');
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.style.borderColor = '#dc3545';
+                    } else {
+                        field.style.borderColor = 'var(--border)';
+                    }
+                });
+                
+                // Special validation for step 1 images
+                if (currentStep === 1 && selectedImages.length === 0) {
+                    alert('Please upload at least one photo of your car');
+                    isValid = false;
+                }
+                
+                if (!isValid) {
+                    currentSection.scrollIntoView({ behavior: 'smooth' });
+                    return;
+                }
+                
+                // Go to next step
+                goToStep(step);
+                
+                // Update summary if going to step 3
+                if (step === 3) {
+                    updateCarSummary();
+                }
+            };
+            
+            window.prevStep = function(step) {
+                goToStep(step);
+            };
+            
+            function goToStep(step) {
+                // Hide all steps
+                document.querySelectorAll('.form-step').forEach(stepEl => {
+                    stepEl.style.display = 'none';
+                });
+                
+                // Show target step
+                currentStep = step;
+                document.getElementById(`step${step}`).style.display = 'block';
+                
+                // Update progress
+                updateProgressLine();
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            
+            // Update car summary
+            function updateCarSummary() {
+                // Basic info
+                document.getElementById('summaryCar').textContent = 
+                    `${document.getElementById('brand').value} ${document.getElementById('model').value}`;
+                
+                document.getElementById('summaryYearColor').textContent = 
+                    `${document.getElementById('year').value}, ${document.getElementById('color').value}`;
+                
+                document.getElementById('summaryLicense').textContent = 
+                    document.getElementById('licensePlate').value;
+                
+                // Format price
+                const price = parseFloat(document.getElementById('pricePerDay').value);
+                document.getElementById('summaryPrice').textContent = 
+                    isNaN(price) ? '-$' : `$${price.toFixed(2)}/day`;
+                
+                // Get transmission text
+                const transmissionSelect = document.getElementById('transmission');
+                const transmissionText = transmissionSelect.options[transmissionSelect.selectedIndex].text;
+                document.getElementById('summaryTransmission').textContent = transmissionText || '-';
+                
+                // Seats
+                document.getElementById('summarySeats').textContent = 
+                    `${document.getElementById('seats').value} seats`;
+                
+                // Get selected features
+                const featureCheckboxes = document.querySelectorAll('input[name="features"]:checked');
+                const featuresList = document.getElementById('featuresList');
+                const featuresSummary = document.getElementById('featuresSummary');
+                
+                featuresList.innerHTML = '';
+                
+                if (featureCheckboxes.length > 0) {
+                    featureCheckboxes.forEach(cb => {
+                        const badge = document.createElement('div');
+                        badge.textContent = cb.value;
+                        badge.style.padding = '0.25rem 0.5rem';
+                        badge.style.background = 'rgba(102, 206, 214, 0.1)';
+                        badge.style.color = 'var(--cta)';
+                        badge.style.borderRadius = '0.25rem';
+                        badge.style.fontSize = '0.75rem';
+                        featuresList.appendChild(badge);
+                    });
+                    featuresSummary.style.display = 'block';
+                } else {
+                    featuresSummary.style.display = 'none';
+                }
+            }
+            
+            // Submit form function
+            window.submitForm = function() {
+                const termsCheck = document.getElementById('termsCheck');
+                const termsError = document.getElementById('termsError');
+                
+                if (!termsCheck.checked) {
+                    termsError.style.display = 'block';
+                    termsCheck.style.outline = '2px solid #dc3545';
+                    window.scrollTo({ top: document.getElementById('termsCheck').offsetTop - 100, behavior: 'smooth' });
+                    return;
+                }
+                
+                termsError.style.display = 'none';
+                termsCheck.style.outline = 'none';
+                
+                // Show success message
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: var(--cta);
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 0.5rem;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                `;
+                
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                toast.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span>🎉</span>
+                        <div>
+                            <div style="font-weight: 600;">Car listed successfully!</div>
+                            <div style="font-size: 0.875rem; opacity: 0.9;">Your car is now available for rent.</div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(toast);
+                
+                // Submit the form
+                setTimeout(() => {
+                    document.getElementById('carForm').submit();
+                }, 1500);
+            };
+            
+            // Initialize
+            updateProgressLine();
+        });
+    </script>
+</body>
+</html>

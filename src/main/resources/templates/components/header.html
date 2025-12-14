@@ -1,0 +1,195 @@
+<!-- templates/components/header.html -->
+<header class="main-header">
+    <div class="header-container">
+        <!-- Logo and branding -->
+        <div class="logo-area">
+            <a href="/" class="logo-link">
+                <div class="logo">
+                    <div class="logo-icon"><img src="/images/logov1-removebg-preview.png" alt="DriveSmart" class="logo-icon-img"/></div>
+                    <div class="logo-text">
+                        <span class="logo-primary">DRIVE</span>
+                        <span class="logo-secondary">SMART</span>
+                    </div>
+                </div>
+            </a>
+            <div class="tagline">Smart Vehicle Rentals</div>
+        </div>
+        
+        <!-- User actions (login/logout/profile) -->
+        <div class="user-actions" id="userActions">
+            <div class="user-greeting">
+                <span id="greetingText">Welcome, Guest</span>
+            </div>
+            <div class="action-buttons">
+                <a href="/user/profile" class="btn-profile">
+                    <span class="btn-icon">👤</span>
+                    <span class="btn-text">Profile</span>
+                </a>
+                <button class="btn-logout" onclick="handleLogout()">
+                    <span class="btn-icon">🔑</span>
+                    <span class="btn-text">Login</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<style>
+    .main-header {
+        background: linear-gradient(to right, #2c3e50, #4a6491);
+        color: white;
+        padding: 15px 0;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+    
+    .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+    }
+    
+    .logo-link {
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .logo-icon-img {
+        height: 32px;
+        display: block;
+    }
+    
+    .logo-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
+    }
+    
+    .logo-primary {
+        font-size: 24px;
+        font-weight: bold;
+        color: #3498db;
+    }
+    
+    .logo-secondary {
+        font-size: 18px;
+        color: #ecf0f1;
+    }
+    
+    .tagline {
+        font-size: 12px;
+        color: #bdc3c7;
+        margin-top: 2px;
+        font-style: italic;
+    }
+    
+    .user-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .user-greeting {
+        font-size: 14px;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn-profile, .btn-logout {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 15px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+    
+    .btn-profile {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .btn-logout {
+        background: #3498db;
+        color: white;
+    }
+    
+    .btn-profile:hover {
+        background: rgba(255,255,255,0.2);
+    }
+    
+    .btn-logout:hover {
+        background: #2980b9;
+    }
+    
+    .btn-icon {
+        font-size: 16px;
+    }
+    
+    @media (max-width: 768px) {
+        .btn-text {
+            display: none;
+        }
+        
+        .btn-profile, .btn-logout {
+            padding: 8px 12px;
+        }
+        
+        .user-greeting {
+            display: none;
+        }
+    }
+</style>
+
+<script>
+    // Check auth status and update UI
+    function updateAuthUI() {
+        const isLoggedIn = localStorage.getItem('drivesmart_logged_in') === 'true';
+        const username = localStorage.getItem('drivesmart_username') || 'Guest';
+        
+        const greeting = document.getElementById('greetingText');
+        const logoutBtn = document.querySelector('.btn-logout');
+        
+        if (isLoggedIn) {
+            greeting.textContent = `Welcome, ${username}`;
+            logoutBtn.innerHTML = '<span class="btn-icon">🚪</span><span class="btn-text">Logout</span>';
+        } else {
+            greeting.textContent = 'Welcome, Guest';
+            logoutBtn.innerHTML = '<span class="btn-icon">🔑</span><span class="btn-text">Login</span>';
+            document.querySelector('.btn-profile').style.display = 'none';
+        }
+    }
+    
+    function handleLogout() {
+        const isLoggedIn = localStorage.getItem('drivesmart_logged_in') === 'true';
+        if (isLoggedIn) {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('drivesmart_logged_in');
+                localStorage.removeItem('drivesmart_username');
+                window.location.href = '/logout';
+            }
+        } else {
+            window.location.href = '/login';
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', updateAuthUI);
+</script>
