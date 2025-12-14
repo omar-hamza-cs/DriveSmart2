@@ -23,8 +23,8 @@ public class AuditLog {
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
-    @Column(nullable = false)
-    private String user;
+    @Column(name = "username", nullable = false)
+    private String username;
 
     @Column(nullable = false)
     private String action;
@@ -49,8 +49,8 @@ public class AuditLog {
     public void setId(Long id) { this.id = id; }
     public LocalDateTime getTimestamp() { return timestamp; }
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
-    public String getUser() { return user; }
-    public void setUser(String user) { this.user = user; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
     public String getAction() { return action; }
     public void setAction(String action) { this.action = action; }
     public String getDetails() { return details; }

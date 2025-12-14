@@ -27,7 +27,7 @@ public class AuditLogService {
         if (search != null && !search.isBlank()) {
             String q = search.toLowerCase();
             base = base.stream().filter(l ->
-                    (l.getUser() != null && l.getUser().toLowerCase().contains(q)) ||
+                    (l.getUsername() != null && l.getUsername().toLowerCase().contains(q)) ||
                     (l.getAction() != null && l.getAction().toLowerCase().contains(q)) ||
                     (l.getDetails() != null && l.getDetails().toLowerCase().contains(q))
             ).collect(Collectors.toList());
